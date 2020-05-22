@@ -1,0 +1,133 @@
+USE [TemporaryDatabaseForTesting]
+GO
+
+/****** Object:  Table [dbo].[Category]    Script Date: 21-May-20 8:25:05 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Category](
+	[Name] [varchar](255) NULL,
+	[Description] [varchar](max) NULL,
+	[CategoryID] [int] IDENTITY(1,1) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[CategoryID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[Interest]    Script Date: 21-May-20 8:25:15 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Interest](
+	[InterestID] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [varchar](255) NULL,
+	[Description] [varchar](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[InterestID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[InterestCategory]    Script Date: 21-May-20 8:25:22 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[InterestCategory](
+	[InterestID] [int] NOT NULL,
+	[CategoryID] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[InterestID] ASC,
+	[CategoryID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[InterestCategory]  WITH CHECK ADD FOREIGN KEY([CategoryID])
+REFERENCES [dbo].[Category] ([CategoryID])
+GO
+
+ALTER TABLE [dbo].[InterestCategory]  WITH CHECK ADD FOREIGN KEY([InterestID])
+REFERENCES [dbo].[Interest] ([InterestID])
+GO
+
+/****** Object:  Table [dbo].[Message]    Script Date: 21-May-20 8:25:35 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Message](
+	[MsgID] [int] IDENTITY(1,1) NOT NULL,
+	[FromUserID] [int] NULL,
+	[ToUserID] [int] NULL,
+	[Body] [varchar](4000) NULL,
+	[Timestamp] [datetime2](7) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[MsgID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[UserAccount]    Script Date: 21-May-20 8:25:42 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[UserAccount](
+	[UserID] [int] IDENTITY(1,1) NOT NULL,
+	[FirstName] [varchar](40) NULL,
+	[LastName] [varchar](40) NULL,
+	[Age] [int] NULL,
+	[Location] [varchar](255) NULL,
+	[Password] [varchar](255) NULL,
+	[Email] [varchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[UserID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[UserInterest]    Script Date: 21-May-20 8:25:50 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[UserInterest](
+	[UserID] [int] NOT NULL,
+	[InterestID] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[UserID] ASC,
+	[InterestID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[UserInterest]  WITH CHECK ADD FOREIGN KEY([InterestID])
+REFERENCES [dbo].[Interest] ([InterestID])
+GO
+
+ALTER TABLE [dbo].[UserInterest]  WITH CHECK ADD FOREIGN KEY([UserID])
+REFERENCES [dbo].[UserAccount] ([UserID])
+GO
+
