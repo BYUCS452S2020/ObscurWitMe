@@ -1,0 +1,15 @@
+You will need to install the developer version of SQL Server from this link: https://www.microsoft.com/en-us/sql-server/sql-server-downloads
+Then once that is installed, you will probably want to install SQL Server Management Studio, which can be found here: https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15
+The default server name will be the name of your machine if you didn't change it.
+Open SQL Server Management Studio and connect to your database by typing in your computer name in the Server Name field.
+On the right hand of the screen there will be an object explorer, Expand the top level item, which will be the name of the Server.
+Right click on the databases folder and select new database.
+For simplicity Sake, use ObscurWitMe as the Database Name, but if you want to use something else it should work fine as long as you change the database.py connection string.
+Once you have that database created, Select New Query in the top portion of the management studio
+Copy and paste the DatabaseSetup.txt contents into the SQLQuery window that will have opened up after you clicked New Query
+Replace TemporaryDatabaseForTesting in the first line with the name of the database, ObscurWitMe if you used that.
+Click execute or press F5.
+That should run successfully and have set up a database with the correct table structures.
+Now the only thing you have to do is change the connection string in database.py to point to your machine.
+Change Server=BATTLESTATION to Server= (Your computer's name).
+That should do it, but contact me on Slack if you run into any issues.
