@@ -42,6 +42,14 @@ class Database():
         query = 'SELECT * FROM UserAccount WHERE UserID IN (SELECT UserID from UserInterest WHERE InterestID = ' + str(interestID) + ')'
         cursor.execute(query)
         return cursor
+    
+    # This selects all interests for a specified userID
+    def getAllInterestsForUser(self, userID):
+        c = self.getConnection()
+        cursor = c.cursor()
+        query = 'SELECT * FROM Interest WHERE InterestID IN (SELECT InterestID from UserInterest WHERE UserID = ' + str(userID) + ')'
+        cursor.execute(query)
+        return cursor
 
     # Creates an entry in the UserInterest table that links the specified userID and interestID together
     def createUserInterest(self, userID, interestID):
