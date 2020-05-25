@@ -1,0 +1,28 @@
+.buttons {
+  width: 100%;
+}
+
+.buttons button {
+  margin-top: 5px;
+}
+
+.row p {
+  width: 100%;
+  text-align: center;
+}
+
+.row div {
+  text-align: center;
+}
+
+.column {
+  float: left;
+  width: 50%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}

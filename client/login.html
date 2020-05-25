@@ -4,15 +4,14 @@
     <title>ObscurWitMe</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">    
+    <link rel="stylesheet" href="css/login.css">
   </head>
 
 
   <body>
-    <h1>Welcome to ObscurWitMe!</h1>
-    
-    <h2>Login</h2>
+    <h1 style="text-align: center;">Login</h1>
 
-    <form class="form-horizontal">
+    <form class="container">
       <div class="form-group">
         <input type="text" id="username" placeholder="Username">
       </div>
@@ -20,7 +19,7 @@
         <input type="password" id="passwd" placeholder="Password">
       </div>
 
-      <button type="submit" class="btn btn-primary" onclick="validate()">Submit</button>
+      <button type="reset" class="btn btn-primary" onclick="validate()">Log In</button>
     </form>
     
     <script src="js/login.js"></script>

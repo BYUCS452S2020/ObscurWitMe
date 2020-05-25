@@ -1,0 +1,25 @@
+.container {
+  width: 1%;
+}
+
+.connections {
+  width: fit-content;
+}
+
+.container p {
+  /* display: table; */
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+}
+
+.container div {
+  text-align: center;
+}
+
+.buttons {
+  margin-top: 5px;
+  align-items: center;
+  text-align: center;
+}
+

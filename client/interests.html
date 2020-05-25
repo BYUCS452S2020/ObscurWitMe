@@ -9,22 +9,35 @@
 
 
   <body>
-    <h1>Interest Page</h1>
+    <h1 style="text-align: center;">Interest Page</h1>
 
-    <div>
-      <p>My interests:</p>
-      <div id="interests"></div>
+    <div class="row">
+      <div class="column">
+        <div>
+          <p>My interests:</p>
+          <div id="interests"></div>
+        </div>
+      </div>
+
+      <div class="column">
+        <div>
+          <input type="search" id="search" placeholder="Search for an interest">
+
+          <button type="submit" class="btn btn-success" onclick="search()">Search</button>
+
+          <div id="results"></div>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <div>
+          <button onclick="window.location.href='create-interest.html'" class="btn btn-primary">Add New Interest</button>
+        </div>
+        <div>
+          <button onclick="window.location.href='main.html'" class="btn btn-danger">Back to Main</button>
+        </div>
+      </div>
     </div>
-
-    <div>
-      <input type="search" id="search" placeholder="Search for an interest">
-
-      <button type="submit" onclick="search()">Search</button>
-
-      <div id="results"></div>
-    </div>
-    <button onclick="window.location.href='create_interest.html'">Add New Interest</button>
-    
 
     <script src="js/interests.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

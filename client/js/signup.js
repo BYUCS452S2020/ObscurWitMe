@@ -5,6 +5,8 @@ function createAccount() {
   var age = document.getElementById("age").value;
   var location = document.getElementById("location").value;
   var passwd = document.getElementById("passwd").value;
+
+  // connect to server
   
   window.location.href="main.html";
 }
