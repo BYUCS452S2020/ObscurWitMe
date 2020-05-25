@@ -46,28 +46,100 @@ class ServerHandler(BaseHTTPRequestHandler):
         length = int(self.headers.get('content-length'))
         messageDict = json.loads(self.rfile.read(length))
         response = {}
-        db = database.Database()
         ###parse data to know what table to insert into
         #####implement code to insert messageDict into database
         if postType == 'createuser':  #insert user
-            email = messageDict['email']
-            password = messageDict['password']
-            num = db.createUserAccount(email, password)
-            if num == 1:
-                response['success'] = True
-            else:
-                response['success'] = False
+            response['success'] = self.create_user(messageDict)
         elif postType == 'updateuser':
-            pass
-        elif postType == 'interest':    #insert interest
-            pass
-
+            response['success'] = self.update_user(messageDict)
+        elif postType == 'createinterest':    #insert interest
+            response['success'] = self.create_interest(messageDict)
+        elif postType == 'createmessage':
+            response['success'] = self.create_message(messageDict)
+        elif postType == 'addinterest':
+            response['success'] = self.add_interest(messageDict)
+        elif postType == 'addinterestcategory':
+            response['success'] = self.add_interest_category(messageDict)
 
         # send the response, current just sends back what was received
         self._set_headers()
-        self.wfile.write(str.encode(json.dumps(messageDict)))
+        self.wfile.write(str.encode(json.dumps(response)))
 
+    def create_user(self, messageDict):
+        db = database.Database()
+        email = messageDict['email']
+        password = messageDict['password']
+        num = db.createUserAccount(email, password)
+        if num == 1:
+            return True
+        else:
+            return False
 
+    def update_user(self, messageDict):
+        db = database.Database()
+        id = messageDict['id']
+        email = messageDict['email']
+        password = messageDict['password']
+        firstName = messageDict['first']
+        lastName = messageDict['last']
+        age = messageDict['age']
+        location = messageDict['location']
+        num = db.updateUserAccount(id, email, password, firstName, lastName, age, location)
+        if num == 1:
+            return True
+        else:
+            return False
+
+    def create_interest(self, messageDict):
+        db = database.Database()
+        name = messageDict['name']
+        des = messageDict['description']
+        num = db.createInterest(name, des)
+        if num == 1:
+            return True
+        else:
+            return False
+
+    def create_message(self, messageDict):
+        db = database.Database()
+        fromID = messageDict['fromid']
+        toID = messageDict['toid']
+        body = messageDict['body']
+        num = db.createMessage(fromID, toID, body)
+        if num == 1:
+            return True
+        else:
+            return False
+
+    def create_category(self, messageDict):
+        db = database.Database()
+        name = messageDict['name']
+        des = messageDict['description']
+        num = db.createCategory(name, des)
+        if num == 1:
+            return True
+        else:
+            return False
+
+    def add_interest(self, messageDict):
+        db = database.Database()
+        userID = messageDict['userid']
+        interestID = messageDict['interestid']
+        num = db.createUserInterest(userID, interestID)
+        if num == 1:
+            return True
+        else:
+            return False
+
+    def add_interest_category(self, messageDict):
+        db = database.Database()
+        interestID = messageDict['interestid']
+        categoryID = messageDict['categoryid']
+        num = db.createInterestCategory(interestID, categoryID)
+        if num == 1:
+            return True
+        else:
+            return False
 
 httpd = HTTPServer(('localhost', 8000), ServerHandler)
 httpd.serve_forever()
