@@ -9,16 +9,34 @@
 
 
   <body>
-    <h1 style="text-align: center;">User Info</h1>
+    <h1 style="text-align: center;">User</h1>
 
-    <div class="container">
-      <div id="info">
+    <div class="row">
+      <div class="column">
+        <div class="info_container">
+          <h2>Info</h2>
 
+          <div id="info">
+          
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="interest_container">
+          <h2>Interests</h2>
+
+          <div id="interests">
+
+          </div>
+        </div>
       </div>
 
       <div class="buttons">
         <div>
-          <button onclick="window.location.href='main.html'" class="btn btn-danger">Back to Main</button>
+          <button onclick="newMessage()" class="btn btn-primary">Send Direct Message</button>
+        </div>
+        <div>
+          <button onclick="window.history.back()" class="btn btn-danger">Back</button>
         </div>
       </div>
     </div>

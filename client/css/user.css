@@ -1,0 +1,52 @@
+.buttons {
+  width: 100%;
+}
+
+.buttons button {
+  margin-top: 5px;
+}
+
+.interest_container {
+  width: 100%;
+}
+
+.interest_container span {
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  display: block;
+  margin-top: 5px;
+}
+
+.interest_container div {
+  text-align: center;
+}
+
+.interests {
+  width: fit-content;
+}
+
+.column {
+  float: left;
+  width: 50%;
+}
+
+.column p {
+  align-items: center;
+  text-align: center;
+}
+
+.column div {
+  text-align: center;
+}
+
+.row div {
+  text-align: center;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
