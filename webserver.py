@@ -1,6 +1,7 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 import cgi
+import database
 
 class ServerHandler(BaseHTTPRequestHandler):
     def _set_headers(self):
@@ -16,11 +17,11 @@ class ServerHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
         getType = self.headers.get('type')
-        tmpDict = {}
+        response = {}
 
         #####implement code here for accessing database and parsing into tmpdict
         #pyodbc code
-        if getType == 'user':   #get a user
+        if getType == 'getuser':   #get a user
             pass
         elif getType == 'interest': #get a interest
             pass
@@ -44,9 +45,19 @@ class ServerHandler(BaseHTTPRequestHandler):
         # read the message and convert it into a python dictionary
         length = int(self.headers.get('content-length'))
         messageDict = json.loads(self.rfile.read(length))
-        ###parser data to know what table to insert into
+        response = {}
+        db = database.Database()
+        ###parse data to know what table to insert into
         #####implement code to insert messageDict into database
-        if postType == 'user':  #insert user
+        if postType == 'createuser':  #insert user
+            email = messageDict['email']
+            password = messageDict['password']
+            num = db.createUserAccount(email, password)
+            if num == 1:
+                response['success'] = True
+            else:
+                response['success'] = False
+        elif postType == 'updateuser':
             pass
         elif postType == 'interest':    #insert interest
             pass
