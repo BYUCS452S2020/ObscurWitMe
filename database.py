@@ -16,7 +16,7 @@ class Database():
 
     def getConnection(self):
         if self.connection == None:
-            self.connection = pyodbc.connect('Driver={SQL Server}; Server=BATTLESTATION;Database=ObscurWitMe; Trusted_Connection=yes')
+            self.connection = pyodbc.connect('Driver={SQL Server}; Server=LAPTOP-V82LAFTA;Database=ObscurWitMe; Trusted_Connection=yes')
         return self.connection
 
     # This selects all categories for a specified InterestID
