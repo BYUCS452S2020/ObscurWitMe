@@ -18,27 +18,26 @@ class ServerHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
-        getType = self.headers.get('type')
         response = {}
 
         #####implement code here for accessing database and parsing into tmpdict
         #pyodbc code
-        if getType == 'getuser':   #get a user
-            pass
-        elif getType == 'getuserinterests': #get a interest
-            pass
-        elif getType == 'getcategoryinterests':
-            pass
-        elif getType == 'getsentmessages':
-            pass
-        elif getType == 'getreceivedmessages':
-            pass
-        elif getType == 'getinterestusers':
-            pass
-        elif getType == 'getallinterests':
-            pass
-        elif getType == 'getAllCategories':
-            pass
+        #if self.path == '/getuser':   #get a user
+        #    pass
+#        elif self.path == 'getuserinterests': #get a interest
+#            pass
+#        elif self.path == 'getcategoryinterests':
+#            pass
+#        elif self.path == 'getsentmessages':
+#            pass
+#        elif self.path == 'getreceivedmessages':
+#            pass
+#        elif self.path == 'getinterestusers':
+#            pass
+        if self.path == '/getallinterests':
+            response = self.get_all_interests()
+        elif self.path == '/getAllCategories':
+            response = self.get_all_categories()
 
         #####
         #write dictionary to json to send to client
@@ -47,14 +46,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 
     #this is for inserting into the database
     def do_POST(self):
-        ctype, pdict = cgi.parse_header(self.headers.get('content-type'))
-        rType = self.headers.get('type')
-
-        # refuse to receive non-json content
-        if ctype != 'application/json':
-            self.send_response(400)
-            self.end_headers()
-            return
 
         # read the message and convert it into a python dictionary
         length = int(self.headers.get('content-length'))
@@ -62,35 +53,31 @@ class ServerHandler(BaseHTTPRequestHandler):
         response = {}
         ###parse data to know what table to insert into
         #####implement code to insert messageDict into database
-        if rType == 'createuser':  #insert user
+        if self.path == '/createuser':  #insert user
             response['success'] = self.create_user(messageDict)
-        elif rType == 'updateuser':
+        elif self.path == '/updateuser':
             response['success'] = self.update_user(messageDict)
-        elif rType == 'createinterest':    #insert interest
+        elif self.path == '/createinterest':    #insert interest
             response['success'] = self.create_interest(messageDict)
-        elif rType == 'createcategory':
+        elif self.path == '/createcategory':
             response['success'] = self.create_category(messageDict)
-        elif rType == 'createmessage':
+        elif self.path == '/createmessage':
             response['success'] = self.create_message(messageDict)
-        elif rType == 'addinterest':
+        elif self.path == '/addinterest':
             response['success'] = self.add_interest(messageDict)
-        elif rType == 'addinterestcategory':
+        elif self.path == '/addinterestcategory':
             response['success'] = self.add_interest_category(messageDict)
-        elif rType == 'getuser':
+        elif self.path == '/getuser':
             response = self.get_user(messageDict['email'])
-        elif rType == 'getallinterests':
-            response = self.get_all_interests()
-        elif rType == 'getallcategories':
-            response = self.get_all_categories()
-        elif rType == 'getcategoryinterests':
+        elif self.path == '/getcategoryinterests':
             response = self.get_category_interests(messageDict['categoryid'])
-        elif rType == 'getsentmessages':
+        elif self.path == '/getsentmessages':
             response = self.get_sent_messages(messageDict['userid'])
-        elif rType == 'getreceivedmessages':
+        elif self.path == '/getreceivedmessages':
             response = self.get_received_messages(messageDict['userid'])
-        elif rType == 'getinterestusers':
+        elif self.path == '/getinterestusers':
             response = self.get_interest_users(messageDict['interestid'])
-        elif rType == 'getuserinterests':
+        elif self.path == '/getuserinterests':
             response = self.get_user_interests(messageDict['userid'])
 
         # send the response, current just sends back what was received
