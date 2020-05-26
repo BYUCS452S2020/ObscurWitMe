@@ -1,5 +1,5 @@
 function validate() {
-  var username = document.getElementById("username").value;
+  var email = document.getElementById("email").value;
   var passwd = document.getElementById("passwd").value;
 
   window.location.href="main.html";

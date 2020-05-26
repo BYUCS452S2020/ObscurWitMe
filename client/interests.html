@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">    
     <link rel="stylesheet" href="css/interests.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   </head>
 
 
@@ -23,7 +24,7 @@
         <div>
           <input type="search" id="search" placeholder="Search for an interest">
 
-          <button type="submit" class="btn btn-success" onclick="search()">Search</button>
+          <button type="submit" class="btn btn-success" id="search_btn">Search</button>
 
           <div id="results"></div>
         </div>
@@ -40,6 +41,70 @@
     </div>
 
     <script src="js/interests.js"></script>
+    <script>
+      $(document).ready(function() {
+        function search() {
+          var text = document.getElementById("search").innerHTML;
+          console.log(text);
+          
+          var url = "http://25.33.188.177:8000/getuserinterests";
+          var data = {
+            userid: sessionStorage.getItem("userid")
+          }
+
+          console.log(data);
+
+          $.ajax({
+            url: url,
+            type: "POST",
+            data: JSON.stringify(data),
+            success: function(data, status) {              
+              console.log("success!");
+              var list = data['interests']
+              var ul = createUL(list);
+
+              document.getElementById("results").appendChild(ul);
+            }, error: function(error) {
+              console.log(error);
+            }
+          });
+        }
+
+        $("search_btn").click(function() {
+          search()
+        });
+
+        $("search").keyup(function(event) {
+          if (event.keyCode == 13) {
+            search();
+          }
+        });
+
+        $("interests").load(function() {
+          var url = "http://25.33.188.177:8000/getuserinterests";
+          var data = {
+            userid: sessionStorage.getItem("userid")
+          }
+
+          console.log(data);
+
+          $.ajax({
+            url: url,
+            type: "POST",
+            data: JSON.stringify(data),
+            success: function(data, status) {              
+              console.log("success!");
+              var list = data['interests']
+              var ul = createUL(list);
+
+              document.getElementById("interests").appendChild(ul);
+            }, error: function(error) {
+              console.log(error);
+            }
+          });
+        });
+      });
+    </script>    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
