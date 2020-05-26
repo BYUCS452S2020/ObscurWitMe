@@ -35,11 +35,19 @@ class Database():
         cursor.execute(query)
         return cursor
 
-    # This selects all interests for a specified interestID
+    # This selects all users for a specified interestID
     def getAllUsersForInterest(self, interestID):
         c = self.getConnection()
         cursor = c.cursor()
         query = 'SELECT * FROM UserAccount WHERE UserID IN (SELECT UserID from UserInterest WHERE InterestID = ' + str(interestID) + ')'
+        cursor.execute(query)
+        return cursor
+    
+    # This selects all interests for a specified userID
+    def getAllInterestsForUser(self, userID):
+        c = self.getConnection()
+        cursor = c.cursor()
+        query = 'SELECT * FROM Interest WHERE InterestID IN (SELECT InterestID from UserInterest WHERE UserID = ' + str(userID) + ')'
         cursor.execute(query)
         return cursor
 
@@ -174,7 +182,7 @@ class Database():
 
     # This selects all interests from the Interest table
     def getAllInterest(self):
-        c = self.getConnection
+        c = self.getConnection()
         cursor = c.cursor()
         query = 'SELECT * FROM Interest'
         cursor.execute(query)
