@@ -9,6 +9,7 @@ class ServerHandler(BaseHTTPRequestHandler):
     def _set_headers(self):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
 
     def do_HEAD(self):
@@ -46,7 +47,6 @@ class ServerHandler(BaseHTTPRequestHandler):
 
     #this is for inserting into the database
     def do_POST(self):
-
         # read the message and convert it into a python dictionary
         length = int(self.headers.get('content-length'))
         messageDict = json.loads(self.rfile.read(length))
@@ -79,6 +79,8 @@ class ServerHandler(BaseHTTPRequestHandler):
             response = self.get_interest_users(messageDict['interestid'])
         elif self.path == '/getuserinterests':
             response = self.get_user_interests(messageDict['userid'])
+        elif self.path == '/getallinterests':
+            response = self.get_all_interests()
 
         # send the response, current just sends back what was received
         self._set_headers()

@@ -36,63 +36,8 @@
     </form>
     
     <script src="js/signup.js"></script>
-    <script>
-      $(document).ready(function() {
-        $("button").click(function() {
-          var firstName = document.getElementById("firstName").value;
-          var lastName = document.getElementById("lastName").value;
-          var email = document.getElementById("email").value;
-          var age = document.getElementById("age").value;
-          var location = document.getElementById("location").value;
-          var passwd = document.getElementById("passwd").value;
-        
-          var url = "http://25.33.188.177:8000/createuser";
-          var data = {
-            first: firstName,
-            last: lastName,
-            email: email,
-            age: age,
-            location: location,
-            password: passwd
-          }
-
-          console.log(data);
-
-          $.ajax({
-            url: url,
-            type: "POST",
-            data: JSON.stringify(data),
-            // headers: { 'Access-Control-Allow-Origin': '*' },
-            success: function(data, status) {
-              console.log("success!");
-
-              url = "http://25.33.188.177:8000/getuser";
-              var new_data = { email: email };
-              
-              $.ajax({
-                url: url,
-                type: "POST",
-                data: JSON.stringify(new_data),
-                success: function(data, status) {
-                  console.log(data)
-                  sessionStorage.setItem("email", data["email"]);
-                  sessionStorage.setItem("userid", data["userid"]);
-                  window.location.href="main.html";
-                }, error: function(error) {
-                  console.log(error);
-                }
-              });
-            }, error: function(error) {
-              console.log("error occurred: ${error}");
-            }
-          });
-        });
-      });
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
   </body>
-
-
-
+  
 </html>

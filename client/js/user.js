@@ -45,8 +45,8 @@ function getInterests() {
   list.push("Hammocking");
   list.push("Running");
   list.push("Painting");
-  list.push("Flag Collecting");
-  list.push("Model Airplanes");
+  list.push("Collecting Flags");
+  list.push("Paper Planes");
   list.push("Hotdog-eating");
 
   createClickableList(list);

@@ -30,9 +30,9 @@ function getOutbox() {
   // connect to server
 
   var list = []
-  list.push({toUser: "Mike", body: "Hello, this is Miki", timestamp: "May 17, 6:15 pm"});
-  list.push({toUser: "Sarah", body: "Hello, this is Miki", timestamp: "May 22, 11:22 am"});
-  list.push({toUser: "David", body: "Hello, this is Miki", timestamp: "May 20, 11:59 am"});
+  list.push({toUser: "Mike", body: "Hi there!", timestamp: "May 17, 6:15 pm"});
+  list.push({toUser: "Sarah", body: "Nice to meet you :)", timestamp: "May 22, 11:22 am"});
+  list.push({toUser: "David", body: "Hi David, how are you?", timestamp: "May 20, 11:59 am"});
 
   for (var i = 0; i < list.length; i++) {
     var details = document.createElement("details");

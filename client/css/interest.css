@@ -3,6 +3,10 @@
   text-align: center;
 }
 
+.buttons button {
+  margin-top: 5px;
+}
+
 .buttons {
   width: 100%;
   text-align: center;
