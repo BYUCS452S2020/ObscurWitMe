@@ -16,25 +16,45 @@ class MongoDatabase():
     # This selects all categories for a specified InterestID
     def getAllCategoriesForInterest(self, interestID):
         db = self.getConnection()
-
+        query = {"interestID": interestID}
+        cursor = db.interestcategory.find(query)
+        query = {"$or": []}
+        for c in cursor:
+            query["$or"].append({"_id": c["categoryID"]})
+        cursor = db.category.find(query)
         return cursor
 
     # This selects all interests for a specified categoryID
     def getAllInterestForCategory(self, categoryID):
         db = self.getConnection()
-
+        query = {"categoryID": categoryID}
+        cursor = db.interestcategory.find(query)
+        query = {"$or": []}
+        for c in cursor:
+            query["$or"].append({"_id": c["interestID"]})
+        cursor = db.interest.find(query)
         return cursor
 
     # This selects all users for a specified interestID
     def getAllUsersForInterest(self, interestID):
         db = self.getConnection()
-
+        query = {"interestID": interestID}
+        cursor = db.userinterest.find(query)
+        query = {"$or": []}
+        for c in cursor:
+            query["$or"].append({"_id": c["userID"]})
+        cursor = db.user.find(query)
         return cursor
 
     # This selects all interests for a specified userID
     def getAllInterestsForUser(self, userID):
         db = self.getConnection()
-
+        query = {"userID": userID}
+        cursor = db.userinterest.find(query)
+        query = {"$or": []}
+        for c in cursor:
+            query["$or"].append({"_id": c["interestID"]})
+        cursor = db.interest.find(query)
         return cursor
 
     # Creates an entry in the UserInterest table that links the specified userID and interestID together
@@ -55,23 +75,23 @@ class MongoDatabase():
     # but skipped.
     def updateUserAccount(self, userID, email='', password='', firstName='', lastName='', age='', location=''):
         db = self.getConnection()
-        update = {}
+        update = {"$set": {}}
         if (email != ''):
-            query['email'] = email
+            update["$set"]['email'] = email
         if (password != ''):
-            query['password'] = password
+            update["$set"]['password'] = password
         if (firstName != ''):
-            query['firstName'] = firstName
+            update["$set"]['firstName'] = firstName
         if (lastName != ''):
-            query['lastName'] = lastName
+            update["$set"]['lastName'] = lastName
         if (age != ''):
-            query['age'] = age
+            update["$set"]['age'] = age
         if (location != ''):
-            query['location'] = location
+            update["$set"]['location'] = location
 
         filter = {"_id": userID}
-        cursor = db.user.updateOne(filter, update)
-        return cursor.modifiedCount
+        cursor = db.user.update_one(filter, update)
+        return cursor.matched_count
 
     # Every user needs an email and a password in order to create an account, returns id of document
     def createUserAccount(self, email, password):
@@ -97,7 +117,7 @@ class MongoDatabase():
     # This creates a message from fromUserID to toUserID with the given body
     def createMessage(self, fromUserID, toUserID, body):
         db = self.getConnection()
-        doc = {"fromUserID": fromUserID, "toUserID": toUserID, "body", body}
+        doc = {"fromUserID": fromUserID, "toUserID": toUserID, "body": body}
         x = db.message.insert_one(doc)
         return x.inserted_id
 
