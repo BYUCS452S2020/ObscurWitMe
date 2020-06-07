@@ -60,7 +60,7 @@ $(document).ready(function() {
 function goToInterestPage(interest) {
   console.log(interest);
 
-  // change to interestid eventually?
+  // TODO: change to interestid
 
   window.location.href="interest.html#" + interest;
 }

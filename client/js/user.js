@@ -1,5 +1,12 @@
-document.getElementById("info").addEventListener("load", getUser());
-document.getElementById("interests").addEventListener("load", getInterests());
+$(document).ready(function() {
+  $("info").ready(function() {
+    getUser();
+  });
+
+  $("interests").ready(function() {
+    getInterests();
+  });
+});
 
 
 function getUser() {
@@ -20,8 +27,7 @@ function getUser() {
 function goToInterestPage(interest) {
   console.log(interest);
 
-  // change to interestid eventually?
-
+  // TODO: change to interestid 
   window.location.href="interest.html#" + interest;
 }
 
@@ -37,24 +43,29 @@ function createClickableList(list) {
 function getInterests() {
   // connect to server
 
-  list = []
-  list.push("Basketball");
-  list.push("Golfing");
-  list.push("Chess");
-  list.push("Frisbee Throwing");
-  list.push("Hammocking");
-  list.push("Running");
-  list.push("Painting");
-  list.push("Collecting Flags");
-  list.push("Paper Planes");
-  list.push("Hotdog-eating");
+  var url = "http://localhost:8000/getuserinterests";
+  // TODO: get userid somehow
+  var userid = sessionStorage.getItem("userinterest";)
+  var data = {
+    userid: userid
+  }
 
-  createClickableList(list);
+  $.ajax({
+    url: url,
+    data: JSON.stringify(data),
+    success: function(data, success) {
+      var list = data["interests"];
+      createClickableList(list);
+    },
+    error: function(error) {
+      console.warn(error)
+    }
+  });
 }
 
 function newMessage() {
   console.log("sending message")
-  // change into userid eventually
+  // TODO: change into userid
   var username = window.location.hash.substring(1);
   sessionStorage.setItem("recipient", username);
   window.location.href="new-message.html";

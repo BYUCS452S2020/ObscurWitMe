@@ -3,7 +3,7 @@ document.getElementById("connections").addEventListener("load", getPotentialConn
 function goToUserPage(username) {
   console.log(username);
 
-  // change to userid eventually
+  // TODO: change to userid
 
   window.location.href="user.html#" + username;
 }

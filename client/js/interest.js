@@ -1,25 +1,25 @@
 $(document).ready(function() {
   $("#add").click(function() {
-    // var interestid = sessionStorage.getItem("interestid");
-    // var userid = sessionStorage.getItem("userid");
+    var interestid = sessionStorage.getItem("interestid");
+    var userid = sessionStorage.getItem("userid");
 
-    // var url = "http://localhost:8000/addinterest"
-    // var data = {
-    //   interestid: interestid,
-    //   userid: userid
-    // }
+    var url = "http://localhost:8000/addinterest"
+    var data = {
+      interestid: interestid,
+      userid: userid
+    }
 
-    // $.ajax({
-    //   url: url,
-    //   data: JSON.stringify(data),
-    //   type: "POST",
-    //   success: function(data, status) {
+    $.ajax({
+      url: url,
+      data: JSON.stringify(data),
+      type: "POST",
+      success: function(data, status) {
         
-    //   },
-    //   error: function(error) {
+      },
+      error: function(error) {
 
-    //   }
-    // });
+      }
+    });
 
     window.history.back();
   });
@@ -38,22 +38,22 @@ function getHeader() {
 function getInterest() {
   var name = window.location.hash.substring(1);
 
-  // var url = "http://localhost:8000/getinterest";
-  // var data = {
-  //   name: name
-  // };
+  var url = "http://localhost:8000/getinterest";
+  var data = {
+    name: name
+  };
 
-  // $.ajax({
-  //   url: url,
-  //   data: JSON.stringify(data),
-  //   type: "POST",
-  //   success: function(data, status) {
+  $.ajax({
+    url: url,
+    data: JSON.stringify(data),
+    type: "POST",
+    success: function(data, status) {
 
-  //   }, 
-  //   error: function(error) {
+    }, 
+    error: function(error) {
 
-  //   }
-  // });
+    }
+  });
 
   interest = {category: "Cool stuff", description: "Really fun activity!", thumbnail: "url" };
 
