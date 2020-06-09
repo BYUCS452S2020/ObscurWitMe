@@ -1,4 +1,5 @@
 import pymongo
+from bson import ObjectId
 
 class MongoDatabase():
     def __init__(self):
@@ -16,7 +17,7 @@ class MongoDatabase():
     # This selects all categories for a specified InterestID
     def getAllCategoriesForInterest(self, interestID):
         db = self.getConnection()
-        query = {"interestID": interestID}
+        query = {"interestID": ObjectId(interestID)}
         cursor = db.interestcategory.find(query)
         query = {"$or": []}
         for c in cursor:
@@ -27,7 +28,7 @@ class MongoDatabase():
     # This selects all interests for a specified categoryID
     def getAllInterestForCategory(self, categoryID):
         db = self.getConnection()
-        query = {"categoryID": categoryID}
+        query = {"categoryID": ObjectId(categoryID)}
         cursor = db.interestcategory.find(query)
         query = {"$or": []}
         for c in cursor:
@@ -38,7 +39,7 @@ class MongoDatabase():
     # This selects all users for a specified interestID
     def getAllUsersForInterest(self, interestID):
         db = self.getConnection()
-        query = {"interestID": interestID}
+        query = {"interestID": ObjectId(interestID)}
         cursor = db.userinterest.find(query)
         query = {"$or": []}
         for c in cursor:
@@ -49,7 +50,7 @@ class MongoDatabase():
     # This selects all interests for a specified userID
     def getAllInterestsForUser(self, userID):
         db = self.getConnection()
-        query = {"userID": userID}
+        query = {"userID": ObjectId(userID)}
         cursor = db.userinterest.find(query)
         query = {"$or": []}
         for c in cursor:
@@ -150,5 +151,11 @@ class MongoDatabase():
     def getUserByEmail(self, email):
         db = self.getConnection()
         query = {"email": email}
+        cursor = db.user.find(query)
+        return cursor
+
+    def login(self, email, password):
+        db = self.getConnection()
+        query = {"email": email, "password": password}
         cursor = db.user.find(query)
         return cursor
