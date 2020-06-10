@@ -102,9 +102,9 @@ class MongoDatabase():
         return x.inserted_id
 
     # This creates an interest page with the given name and description
-    def createInterest(self, name, description):
+    def createInterest(self, name, description, url):
         db = self.getConnection()
-        doc = {"name": name, "description": description}
+        doc = {"name": name, "description": description, 'url': url}
         x = db.interest.insert_one(doc)
         return x.inserted_id
 
