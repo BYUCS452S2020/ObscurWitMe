@@ -158,6 +158,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             tmp['interestid'] = str(row['_id'])
             tmp['name'] = row['name']
             tmp['description'] = row['description']
+            tmp['url'] = row['url']
             response['interests'].append(tmp)
         return response
 
@@ -184,6 +185,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             tmp['interestid'] = str(row['_id'])
             tmp['name'] = row['name']
             tmp['description'] = row['description']
+            tmp['url'] = row['url']
             response['interests'].append(tmp)
         return response
 
@@ -211,7 +213,8 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         response = {}
         name = messageDict['name']
         des = messageDict['description']
-        num = db.createInterest(name, des)
+        url = messageDict['url']
+        num = db.createInterest(name, des, url)
         response['interestid'] = num
         return response
 
