@@ -10,8 +10,8 @@ $(document).ready(function() {
 
 
 function getUser() {
-  var username = window.location.hash.substring(1);
-  console.log(username);
+  var userid = window.location.hash.substring(1);
+  console.log("userid: " + userid);
 
   // connect to server
 
@@ -45,7 +45,7 @@ function getInterests() {
 
   var url = "http://localhost:8000/getuserinterests";
   // TODO: get userid somehow
-  var userid = sessionStorage.getItem("userinterest";)
+  var userid = sessionStorage.getItem("userinterest");
   var data = {
     userid: userid
   }

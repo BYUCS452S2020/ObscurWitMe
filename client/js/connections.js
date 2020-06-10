@@ -1,31 +1,58 @@
-document.getElementById("connections").addEventListener("load", getPotentialConnections());
+$(document).ready(function() {
+  $("connections").ready(function() {
+    getPotentialConnections();
+  });
+});
 
-function goToUserPage(username) {
-  console.log(username);
 
-  // TODO: change to userid
 
-  window.location.href="user.html#" + username;
+function goToUserPage(userid) {
+  console.log(userid);
+
+  window.location.href="user.html#" + userid;
 }
 
 function createClickableList(list) {
-  for (var i = 0; i < list.length; i++) {
-    var p = document.createElement("p");
-    p.appendChild(document.createTextNode(list[i]));
-    p.addEventListener("click", function() { goToUserPage(this.innerText) });
-    document.getElementById("connections").appendChild(p);
-  }
+  $ul = $("<ul></ul>");
+  $("#connections").append($ul);
+
+  $(list).each(function(i) {
+    var $li = $("<li></li>").text(list[i].username);
+    $li.click(function(e) {
+      e.preventDefault();
+      goToUserPage(list[i].userid);
+    });
+    $($ul).append($li);
+  });
 }
 
 function getPotentialConnections() {
   console.log("getting connections");
-  // connect to server
+  
+  // // TODO: does this exist?
+  // var url = "http://localhost:8000/getconnections";
+  // var userid = sessionStorage.getItem("userid");
+  // var data = {
+  //   userid: userid
+  // }
+
+  // $.ajax({
+  //   url: url,
+  //   data: JSON.stringify(data),
+  //   success: function(data, status) {
+  //     createClickableList(data["connections"]);
+  //   },
+  //   error: function(error) {
+  //     console.warn(error);
+  //   }
+  // });
 
   list = []
-  list.push("Mike");
-  list.push("Sarah");
-  list.push("Joey");
-  list.push("Jessica");
+  list.push({ "username": "Mike", "userid": "1" });
+  list.push({ "username": "Sarah", "userid": "2" });
+  list.push({ "username": "Joey", "userid": "3" });
+  list.push({ "username": "Jessica", "userid": "4" });
 
+  console.log(list)
   createClickableList(list);
 }
