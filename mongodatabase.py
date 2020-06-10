@@ -153,6 +153,12 @@ class MongoDatabase():
         query = {"email": email}
         cursor = db.user.find(query)
         return cursor
+    
+    def getInterestByID(self, interestID):
+        db = self.getConnection()
+        query = {"_id": interestID}
+        cursor = db.interest.find(query)
+        return cursor
 
     def login(self, email, password):
         db = self.getConnection()
