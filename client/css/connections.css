@@ -6,6 +6,10 @@
   width: fit-content;
 }
 
+ul li {
+  cursor: pointer;
+}
+
 .container p {
   align-items: center;
   text-align: center;

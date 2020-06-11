@@ -1,4 +1,7 @@
 $(document).ready(function() {
+  sessionStorage.setItem("search_startat", "0");
+
+
   $("interests").ready(function() {
     var url = "http://localhost:8000/getuserinterests";
     var data = {
@@ -13,10 +16,8 @@ $(document).ready(function() {
       data: JSON.stringify(data),
       success: function(data, status) {              
         console.log("success, data: " + JSON.stringify(data));
-        var list = data['interests'];
-        var ul = createUL(list);
-
-        document.getElementById("interests").appendChild(ul);
+        var list = data["interests"];
+        createClickableList(list, $("#interests"));
       }, 
       error: function(error) {
         console.log(error);
@@ -25,26 +26,32 @@ $(document).ready(function() {
   });
 
   $("#search_btn").click(function() {
-    console.log("in search");
     var text = $("#search").val();
     console.log("searching for: " + text);
-    
+
     var url = "http://localhost:8000/getallinterests";
-    var data = {};
+    var startat = parseInt(sessionStorage.getItem("search_startat"));
+
+    var data = {
+      startat: startat,
+      count: 10,
+      query: text
+    };
 
     $.ajax({
       url: url,
       type: "POST",
       data: JSON.stringify(data),
-      success: function(data, status) {              
+      success: function(data, status) {    
         console.log("success, data: " + JSON.stringify(data));
 
-        var list = data['interests'];
+        var list = data["interests"];
         console.log(list);
-        createClickableList(list);
-        // var ul = createUL(list);
+        createClickableList(list, $("#results"));
 
-        // document.getElementById("results").appendChild(ul);
+        if ($("#results ul li").length < data["totalcount"]) {
+          sessionStorage.setItem("search_startat", (startat + 10).toString());
+        }
       }, 
       error: function(error) {
         console.log(error);
@@ -57,34 +64,22 @@ $(document).ready(function() {
   });
 });
 
-function goToInterestPage(interest) {
-  console.log(interest);
+function goToInterestPage(interestid) {
+  console.log(interestid);
 
-  // TODO: change to interestid
-
-  window.location.href="interest.html#" + interest;
+  window.location.href="interest.html#" + interestid;
 }
 
-function createClickableList(list) {
-  for (var i = 0; i < list.length; i++) {
-    var span = document.createElement("span");
-    span.appendChild(document.createTextNode(list[i].name));
-    span.addEventListener("click", function() { goToInterestPage(this.innerText) });
-    document.getElementById("results").appendChild(span);
-  }
-}
+function createClickableList(list, element) {
+  var $ul = $("<ul></ul>");
+  element.append($ul);
 
-function createUL(list) {
-  var ul = document.createElement("ul");
-
-  for (var i = 0; i < list.length; i++) {
-    var item = document.createElement("li");
-
-    item.appendChild(document.createTextNode(list[i].name));
-
-    ul.append(item);
-  }
-
-  console.log(ul);
-  return ul;
+  $(list).each(function(i) {
+    var $li = $("<li></li>").text(list[i].name);
+    $li.click(function(e) {
+      e.preventDefault();
+      goToUserPage(list[i].interestid);
+    });
+    $($ul).append($li);
+  });
 }

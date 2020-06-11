@@ -1,4 +1,6 @@
 $(document).ready(function() {
+  sessionStorage.setItem("conn_startat", "0");
+
   $("connections").ready(function() {
     getPotentialConnections();
   });
@@ -13,7 +15,7 @@ function goToUserPage(userid) {
 }
 
 function createClickableList(list) {
-  $ul = $("<ul></ul>");
+  var $ul = $("<ul></ul>");
   $("#connections").append($ul);
 
   $(list).each(function(i) {
@@ -29,30 +31,28 @@ function createClickableList(list) {
 function getPotentialConnections() {
   console.log("getting connections");
   
-  // // TODO: does this exist?
-  // var url = "http://localhost:8000/getconnections";
-  // var userid = sessionStorage.getItem("userid");
-  // var data = {
-  //   userid: userid
-  // }
+  var url = "http://localhost:8000/getconnections";
+  var userid = sessionStorage.getItem("userid");
+  var startat = parseInt(sessionStorage.getItem("conn_startat"));
+   
+  var data = {
+    userid: userid,
+    startat: startat,
+    count: 10
+  }
 
-  // $.ajax({
-  //   url: url,
-  //   data: JSON.stringify(data),
-  //   success: function(data, status) {
-  //     createClickableList(data["connections"]);
-  //   },
-  //   error: function(error) {
-  //     console.warn(error);
-  //   }
-  // });
+  $.ajax({
+    url: url,
+    data: JSON.stringify(data),
+    success: function(data, status) {
+      createClickableList(data["connections"]);
 
-  list = []
-  list.push({ "username": "Mike", "userid": "1" });
-  list.push({ "username": "Sarah", "userid": "2" });
-  list.push({ "username": "Joey", "userid": "3" });
-  list.push({ "username": "Jessica", "userid": "4" });
-
-  console.log(list)
-  createClickableList(list);
+      if ($("#connections ul li").length < data["totalcount"]) {
+        sessionStorage.setItem("conn_startat", (startat + 10).toString());
+      }
+    },
+    error: function(error) {
+      console.warn(error);
+    }
+  });
 }

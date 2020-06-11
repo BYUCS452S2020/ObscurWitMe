@@ -1,6 +1,6 @@
 $(document).ready(function() {
   $("#add").click(function() {
-    var interestid = sessionStorage.getItem("interestid");
+    var interestid = window.location.hash.substring(1);
     var userid = sessionStorage.getItem("userid");
 
     var url = "http://localhost:8000/addinterest"
@@ -14,33 +14,26 @@ $(document).ready(function() {
       data: JSON.stringify(data),
       type: "POST",
       success: function(data, status) {
-        
+        alert("New Interest Added Successfully!");
       },
       error: function(error) {
-
+        console.warn(error);
+        alert("Could not add interest :(");
       }
     });
 
     window.history.back();
   });
 
-  $("header").ready(getHeader());
   $("info").ready(getInterest());
 });
 
-function getHeader() {
-  var header = window.location.hash.substring(1);
-  console.log(header);
-
-  document.getElementById("header").innerText = decodeURI(header);
-}
-
 function getInterest() {
-  var name = window.location.hash.substring(1);
+  var interestid = window.location.hash.substring(1);
 
   var url = "http://localhost:8000/getinterest";
   var data = {
-    name: name
+    interestid: interestid
   };
 
   $.ajax({
@@ -48,18 +41,24 @@ function getInterest() {
     data: JSON.stringify(data),
     type: "POST",
     success: function(data, status) {
+      var interest = data["interest"];
+      
+      $("#header").append(interest.name);
 
+      var categories = interest.categories.join(", ");
+
+      // var $p_name = $("<p></p>").text("Name: " + interest.name);
+      var $p_categories = $("<p></p>").text("Categories: " + categories);
+      var $p_description = $("<p></p>").text("Description: " + interest.description);
+      var $img = $(`<img src=${interest.image}>`);
+
+      // $("#info").append($p_name);
+      $("#info").append($p_categories);
+      $("#info").append($p_description);
+      $("#info").append($img);
     }, 
     error: function(error) {
-
+      console.warn(error);
     }
-  });
-
-  interest = {category: "Cool stuff", description: "Really fun activity!", thumbnail: "url" };
-
-  for (let key in interest) {
-    var p = document.createElement("p");
-    p.appendChild(document.createTextNode(key + ": " + interest[key]));
-    document.getElementById("info").appendChild(p);
-  }
+  });  
 }

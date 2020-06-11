@@ -23,9 +23,10 @@ function getInbox() {
     data: JSON.stringify(data),
     success: function(data, status) {
       var list = data["receivedmessages"];
+      buildInbox(list);
     },
     error: function(error) {
-      console.warn("error while getting inbox: ${error}")
+      console.warn(`error while getting inbox: ${error}`)
     }
   });  
 }
@@ -59,9 +60,10 @@ function getOutbox() {
     data: JSON.stringify(data),
     success: function(data, status) {
       var list = data["sentmessages"];
+      buildOutbox(list);
     },
     error: function(error) {
-      console.warn("error while getting inbox: ${error}")
+      console.warn(`error while getting inbox: ${error}`)
     }
   });
 }
