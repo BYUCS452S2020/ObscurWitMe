@@ -22,7 +22,7 @@ $(document).ready(function() {
       }
     });
 
-    window.history.back();
+    window.location.href = "interests.html";
   });
 
   $("info").ready(getInterest());
@@ -41,18 +41,14 @@ function getInterest() {
     type: "POST",
     data: JSON.stringify(data),
     success: function(data, status) {
-      var interest = data["interest"];
-      
-      $("#header").append(interest.name);
+      $("#header").append(data["name"]);
 
-      var categories = interest.categories.join(", ");
+      var categories = data["categories"].join(", ");
 
-      // var $p_name = $("<p></p>").text("Name: " + interest.name);
       var $p_categories = $("<p></p>").text("Categories: " + categories);
-      var $p_description = $("<p></p>").text("Description: " + interest.description);
-      var $img = $(`<img src=${interest.image}>`);
+      var $p_description = $("<p></p>").text("Description: " + data["description"]);
+      var $img = $(`<img src=${data["imageURL"]} alt="Image of Activity" style="width:500px;height:500px">`);
 
-      // $("#info").append($p_name);
       $("#info").append($p_categories);
       $("#info").append($p_description);
       $("#info").append($img);

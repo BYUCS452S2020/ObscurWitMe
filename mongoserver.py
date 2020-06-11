@@ -115,8 +115,8 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         cursor = db.getInterestByID(interestID)
         for row in cursor:
             response['interestid'] = str(row['_id'])
-            response['name'] = row['firstName']
-            response['description'] = row['lastName']
+            response['name'] = row['name']
+            response['description'] = row['description']
             response['imageURL'] = row['imageURL']
             response['categories'] = row['categories']
             response['users'] = row['users']
