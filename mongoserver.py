@@ -72,6 +72,8 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             response = self.add_interest_category(messageDict, db)
         elif self.path == '/getuser':
             response = self.get_user(messageDict['email'], db)
+        elif self.path == '/getinterest':
+            response = self.get_interest(messageDict['interestid'], db)
         elif self.path == '/getcategoryinterests':
             response = self.get_category_interests(messageDict['categoryid'], db)
         elif self.path == '/getsentmessages':
@@ -82,6 +84,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             response = self.get_interest_users(messageDict['interestid'], db)
         elif self.path == '/getuserinterests':
             response = self.get_user_interests(messageDict['userid'], db)
+        
 
         # send the response, current just sends back what was received
         self._set_headers()
@@ -99,6 +102,16 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             response['location'] = row['location']
             response['password'] = row['password']
             response['email'] = row['email']
+            break
+        return response
+    
+    def get_interest(self, interestID, db):
+        response = {}
+        cursor = db.getInterestByID(interestID)
+        for row in cursor:
+            response['interestid'] = str(row['_id'])
+            response['name'] = row['firstName']
+            response['description'] = row['lastName']
             break
         return response
 
@@ -158,6 +171,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             tmp['interestid'] = str(row['_id'])
             tmp['name'] = row['name']
             tmp['description'] = row['description']
+            tmp['url'] = row['url']
             response['interests'].append(tmp)
         return response
 
@@ -184,6 +198,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             tmp['interestid'] = str(row['_id'])
             tmp['name'] = row['name']
             tmp['description'] = row['description']
+            tmp['url'] = row['url']
             response['interests'].append(tmp)
         return response
 
@@ -211,7 +226,8 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         response = {}
         name = messageDict['name']
         des = messageDict['description']
-        num = db.createInterest(name, des)
+        url = messageDict['url']
+        num = db.createInterest(name, des, url)
         response['interestid'] = num
         return response
 
