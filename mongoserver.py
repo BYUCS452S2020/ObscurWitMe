@@ -35,10 +35,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
 #            pass
 #        elif self.path == 'getinterestusers':
 #            pass
-        if self.path == '/getallinterests':
-            response = self.get_all_interests(db)
-        elif self.path == '/getAllCategories':
-            response = self.get_all_categories(db)
+        
 
         #####
         #write dictionary to json to send to client
@@ -85,6 +82,12 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             response = self.get_interest_users(messageDict['interestid'], db)
         elif self.path == '/getuserinterests':
             response = self.get_user_interests(messageDict['userid'], db)
+        elif self.path == '/getconnections':
+            response = self.get_connections(messageDict['userid'], db)
+        elif self.path == '/getallinterests':
+            response = self.get_all_interests(db)
+        elif self.path == '/getAllCategories':
+            response = self.get_all_categories(db)
         
 
         # send the response, current just sends back what was received
@@ -93,59 +96,32 @@ class MongoServerHandler(BaseHTTPRequestHandler):
 
 
     def get_user(self, messageDict, db):
-        response = {}
         if 'email' in messageDict:
             cursor = db.getUserByEmail(messageDict['email'])
         elif 'userid' in messageDict:
             cursor = db.getUserByID(messageDict['userid'])
-        for row in cursor:
-            response['userid'] = str(row['_id'])
-            response['firstname'] = row['firstName']
-            response['lastname'] = row['lastName']
-            response['age'] = row['age']
-            response['location'] = row['location']
-            response['email'] = row['email']
-            response['interests'] = row['interests']
-            break
-        return response
+        results = self.convertCursorToUserObjects(cursor)
+        return results[0]
     
     def get_interest(self, interestID, db):
-        response = {}
         cursor = db.getInterestByID(interestID)
-        for row in cursor:
-            response['interestid'] = str(row['_id'])
-            response['name'] = row['name']
-            response['description'] = row['description']
-            response['imageURL'] = row['imageURL']
-            response['categories'] = row['categories']
-            response['users'] = row['users']
-            break
-        return response
+        results = self.convertCursorToInterestObjects(cursor)
+        return results[0]
 
     def get_all_interests(self, db):
         response = {'interests':[]}
         cursor = db.getAllInterest()
-        for row in cursor:
-            tmp = {}
-            tmp['interestid'] = str(row['_id'])
-            tmp['name'] = row['name']
-            tmp['description'] = row['description']
-            tmp['imageURL'] = row['imageURL']
-            tmp['categories'] = row['categories']
-            tmp['users'] = row['users']
-            response['interests'].append(tmp)
+        results = self.convertCursorToInterestObjects(cursor)
+        for item in results:
+            response['interests'].append(item)
         return response
 
     def get_all_categories(self, db):
         response = {'categories':[]}
         cursor = db.getAllCategories()
-        for row in cursor:
-            tmp = {}
-            tmp['categoryid'] = str(row['_id'])
-            tmp['name'] = row['name']
-            tmp['description'] = row['description']
-            tmp['interests'] = row['interests']
-            response['categories'].append(tmp)
+        results = self.convertCursorToCategoryObjects(cursor)
+        for item in results:
+            response['categories'].append(item)
         return response
 
     def get_sent_messages(self, userID, db):
@@ -154,8 +130,8 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         for row in cursor:
             tmp = {}
             tmp['messageid'] = str(row['_id'])
-            tmp['fromid'] = row['fromUserID']
-            tmp['toid'] = row['toUserID']
+            tmp['fromid'] = str(row['fromUserID'])
+            tmp['toid'] = str(row['toUserID'])
             tmp['body'] = row['body']
             tmp['time'] = row['_id'].getTimestamp()
             response['sentmessages'].append(tmp)
@@ -167,8 +143,8 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         for row in cursor:
             tmp = {}
             tmp['messageid'] = str(row['_id'])
-            tmp['fromid'] = row['fromUserID']
-            tmp['toid'] = row['toUserID']
+            tmp['fromid'] = str(row['fromUserID'])
+            tmp['toid'] = str(row['toUserID'])
             tmp['body'] = row['body']
             tmp['time'] = row['_id'].getTimestamp()
             response['receivedmessages'].append(tmp)
@@ -177,44 +153,25 @@ class MongoServerHandler(BaseHTTPRequestHandler):
     def get_category_interests(self, categoryID, db):
         response = {'interests':[]}
         cursor = db.getAllInterestForCategory(categoryID)
-        for row in cursor:
-            tmp = {}
-            tmp['interestid'] = str(row['_id'])
-            tmp['name'] = row['name']
-            tmp['description'] = row['description']
-            tmp['imageURL'] = row['imageURL']
-            tmp['categories'] = row['categories']
-            tmp['users'] = row['users']
-            response['interests'].append(tmp)
+        results = self.convertCursorToInterestObjects(cursor)
+        for item in results:
+            response['interests'].append(item)
         return response
 
     def get_interest_users(self, interestID, db):
         response = {'users':[]}
         cursor = db.getAllUsersForInterest(interestID)
-        for row in cursor:
-            tmp = {}
-            tmp['userid'] = str(row['_id'])
-            tmp['firstname'] = row['firstName']
-            tmp['lastname'] = row['lastName']
-            tmp['age'] = row['age']
-            tmp['location'] = row['location']
-            tmp['email'] = row['email']
-            tmp['interests'] = row['interests']
-            response['users'].append(tmp)
+        results = self.convertCursorToUserObjects(cursor)
+        for item in results:
+            response['users'].append(item)
         return response
 
     def get_user_interests(self, userID, db):
         response = {'interests':[]}
         cursor = db.getAllInterestsForUser(userID)
-        for row in cursor:
-            tmp = {}
-            tmp['interestid'] = str(row['_id'])
-            tmp['name'] = row['name']
-            tmp['description'] = row['description']
-            tmp['imageURL'] = row['imageURL']
-            tmp['categories'] = row['categories']
-            tmp['users'] = row['users']
-            response['interests'].append(tmp)
+        results = self.convertCursorToInterestObjects(cursor)
+        for item in results:
+            response['interests'].append(item)
         return response
 
     def create_user(self, messageDict, db):
@@ -281,6 +238,14 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         response['success'] = True
         return response
 
+    def get_connections(self, userID, db):
+        response = {'users': []}
+        cursor = db.getConnections(userID)
+        results = self.convertCursorToUserObjects(cursor)
+        for item in results:
+            response['users'].append(item)
+        return response
+
     def login(self, messageDict, db):
         response = {}
         email = messageDict['email']
@@ -294,6 +259,56 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             response['success'] = False
         response['userid'] = id
         return response
-    
+
+    def convertCursorToCategoryObjects(self, cursor):
+        result = []
+        for row in cursor:
+            tmp = {}
+            tmp['interestid'] = str(row['_id'])
+            tmp['name'] = row['name']
+            tmp['description'] = row['description']
+            tmp['imageURL'] = row['imageURL']
+            catList = []
+            for item in row['categories']:
+                catList.append(str(item))
+            tmp['categories'] = catList
+            usList = []
+            for item in row['users']:
+                usList.append(str(item))
+            tmp['users'] = usList
+            result.append(tmp)
+        return result
+
+    def convertCursorToInterestObjects(self, cursor):
+        result = []
+        for row in cursor:
+            tmp = {}
+            tmp['categoryid'] = str(row['_id'])
+            tmp['name'] = row['name']
+            tmp['description'] = row['description']
+            intList = []
+            for item in row['interests']:
+                intList.append(str(item))
+            tmp['interests'] = intList
+            result.append(tmp)
+        return result
+
+    def convertCursorToUserObjects(self, cursor):
+        result = []
+        for row in cursor:
+            tmp = {}
+            tmp['userid'] = str(row['_id'])
+            tmp['firstname'] = row['firstName']
+            tmp['lastname'] = row['lastName']
+            tmp['age'] = row['age']
+            tmp['location'] = row['location']
+            tmp['email'] = row['email']
+            intList = []
+            for item in row['interests']:
+                intList.append(str(item))
+            tmp['interests'] = intList
+            result.append(tmp)
+        return result
+
 httpd = HTTPServer(('localhost', 8000), MongoServerHandler)
 httpd.serve_forever()
