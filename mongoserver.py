@@ -2,6 +2,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 import cgi
 import mongodatabase
+from bson import json_util
 from datetime import datetime
 
 
@@ -70,6 +71,8 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             response = self.add_interest_category(messageDict, db)
         elif self.path == '/getuser':
             response = self.get_user(messageDict, db)
+        elif self.path == '/searchinterest':
+            response = self.search_interest(messageDict, db)
         elif self.path == '/getinterest':
             response = self.get_interest(messageDict['interestid'], db)
         elif self.path == '/getcategoryinterests':
@@ -106,7 +109,22 @@ class MongoServerHandler(BaseHTTPRequestHandler):
     def get_interest(self, interestID, db):
         cursor = db.getInterestByID(interestID)
         results = self.convertCursorToInterestObjects(cursor)
+        i = results[0]
+        nameList = []
+        for cat in i['categories']:
+            c = db.getCategoryByID(cat)
+            for ctg in c:
+                nameList.append(ctg['name'])
+        i['categories'] = nameList
         return results[0]
+
+    def search_interest(self, messageDict, db):
+        response = {'interests' : []}
+        cursor = db.searchInterest(messageDict['query'])
+        results = self.convertCursorToInterestObjects(cursor)
+        for item in results:
+            response['interests'].append(item)
+        return response
 
     def get_all_interests(self, db):
         response = {'interests':[]}
@@ -127,27 +145,17 @@ class MongoServerHandler(BaseHTTPRequestHandler):
     def get_sent_messages(self, userID, db):
         response = {'sentmessages':[]}
         cursor = db.getSentMessages(userID)
-        for row in cursor:
-            tmp = {}
-            tmp['messageid'] = str(row['_id'])
-            tmp['fromid'] = str(row['fromUserID'])
-            tmp['toid'] = str(row['toUserID'])
-            tmp['body'] = row['body']
-            tmp['time'] = '' #row['_id'].generation_time
-            response['sentmessages'].append(tmp)
+        result = self.convertCursorToMessageObjects(cursor, db)
+        for msg in result:
+            response['sentmessages'].append(msg)
         return response
 
     def get_received_messages(self, userID, db):
         response = {'receivedmessages':[]}
         cursor = db.getReceivedMessages(userID)
-        for row in cursor:
-            tmp = {}
-            tmp['messageid'] = str(row['_id'])
-            tmp['fromid'] = str(row['fromUserID'])
-            tmp['toid'] = str(row['toUserID'])
-            tmp['body'] = row['body']
-            tmp['time'] = '' #row['_id'].generation_time
-            response['receivedmessages'].append(tmp)
+        result = self.convertCursorToMessageObjects(cursor, db)
+        for msg in result:
+            response['receivedmessages'].append(msg)
         return response
 
     def get_category_interests(self, categoryID, db):
@@ -322,6 +330,40 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             for item in row['interests']:
                 intList.append(str(item))
             tmp['interests'] = intList
+            result.append(tmp)
+        return result
+
+    def convertCursorToMessageObjects(self, cursor, db):
+        result = []
+        for row in cursor:
+            tmp = {}
+            tmp['messageid'] = str(row['_id'])
+            cursor = db.getUserByID(row['fromUserID'])
+            tmp['fromid'] = ''
+            for u in cursor:
+                if 'firstName' in u:
+                    fString = u['firstName']
+                else:
+                    fString = ''
+                if 'lastName' in u:
+                    lString = u['lastName']
+                else:
+                    lString = ''
+                tmp['fromid'] = fString + ' ' + lString
+            cursor = db.getUserByID(row['toUserID'])
+            tmp['toid'] = ''
+            for u in cursor:
+                if 'firstName' in u:
+                    fString = u['firstName']
+                else:
+                    fString = ''
+                if 'lastName' in u:
+                    lString = u['lastName']
+                else:
+                    lString = ''
+                tmp['toid'] = fString + ' ' + lString
+            tmp['body'] = row['body']
+            tmp['time'] = json.dumps(row['_id'].generation_time, default=json_util.default)
             result.append(tmp)
         return result
 
