@@ -20,7 +20,7 @@ class MongoDatabase():
         cursor = db.interest.find_one(query)
         query = {"$or": []}
         for cat in cursor['categories']:
-            query["$or"].append({"name": cat})
+            query["$or"].append({"_id": ObjectId(cat)})
         cursor = db.category.find(query)
         return cursor
 
@@ -31,7 +31,7 @@ class MongoDatabase():
         cursor = db.category.find_one(query)
         query = {"$or": []}
         for i in cursor['interests']:
-            query["$or"].append({"name": i})
+            query["$or"].append({"_id": ObjectId(i)})
         cursor = db.interest.find(query)
         return cursor
 
@@ -108,13 +108,15 @@ class MongoDatabase():
     # This creates an interest page with the given name and description
     def createInterest(self, name, description, url, categoryList):
         db = self.getConnection()
-        doc = {"name": name, "description": description, 'imageURL': url, 'categories': categoryList, 'users':[]}
+        doc = {"name": name, "description": description, 'imageURL': url, 'categories': [], 'users':[]}
         x = db.interest.insert_one(doc)
         for category in categoryList:
             if (not db.categories.count({'name' : category}) > 0):
                 # Category does not exist, create it.
-                self.createCategory(category, category)
-            self.createInterestCategory(x.inserted_id, category)
+                ctgID = self.createCategory(category, category)
+            else:
+                ctgID = db.categories.find_one({'name' : category})['_id']
+            self.createInterestCategory(x.inserted_id, ctgID)
         return x.inserted_id
 
     # This creates a category page with the given name and description
@@ -173,6 +175,16 @@ class MongoDatabase():
         db = self.getConnection()
         query = {"_id": ObjectId(interestID)}
         cursor = db.interest.find(query)
+        return cursor
+
+    def getConnections(self, userID):
+        db = self.getConnection()
+        query = {'_id' : ObjectId(userID)}
+        usr = db.user.find_one(query)
+        query = {'$or' : []}
+        for i in usr['interests']:
+            query['$or'].append({'interests': i})
+        cursor = db.user.find(query)
         return cursor
 
     def login(self, email, password):
