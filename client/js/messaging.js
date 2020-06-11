@@ -8,6 +8,25 @@ $(document).ready(function() {
   });
 });
 
+function getTime(time) {
+  var timestamp = time.substring(10, time.length - 1);
+
+  var date = new Date(timestamp * 1000);
+  var day = date.getDate();
+  var month = date.getMonth();
+  // Hours part from the timestamp
+  var hours = date.getHours();
+  // Minutes part from the timestamp
+  var minutes = "0" + date.getMinutes();
+  // Seconds part from the timestamp
+  var seconds = "0" + date.getSeconds();
+
+  // Will display time in 10:30:23 format
+  var formattedTime = month + '/' + day + ", " + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+  console.log(formattedTime);
+
+  return formattedTime;
+}
 
 function getInbox() {
   console.log("getting inbox");
@@ -36,11 +55,11 @@ function getInbox() {
 // TODO: format properly
 function buildInbox(list) {
   for (var i = 0; i < list.length; i++) {
-    var date = new Date(list[i].time * 1000);
-    console.log(date);
+    var formattedTime = getTime(list[i].time);
+
     var details = document.createElement("details");
     var summary = document.createElement("summary");
-    summary.appendChild(document.createTextNode(list[i].fromid + "------" + list[i].time));
+    summary.appendChild(document.createTextNode(list[i].fromid + "------" + formattedTime));
     var p = document.createElement("p");
     p.appendChild(document.createTextNode(list[i].body));
     details.appendChild(summary);
@@ -77,9 +96,11 @@ function getOutbox() {
 // TODO: format properly
 function buildOutbox(list) {
   for (var i = 0; i < list.length; i++) {
+    var formattedTime = getTime(list[i].time);
+
     var details = document.createElement("details");
     var summary = document.createElement("summary");
-    summary.appendChild(document.createTextNode(list[i].toid + "------" + list[i].time));
+    summary.appendChild(document.createTextNode(list[i].toid + "------" + formattedTime));
     var p = document.createElement("p");
     p.appendChild(document.createTextNode(list[i].body));
     details.appendChild(summary);
