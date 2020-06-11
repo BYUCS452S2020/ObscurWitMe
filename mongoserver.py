@@ -89,6 +89,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
 
         # send the response, current just sends back what was received
         self._set_headers()
+        print(response)
         self.wfile.write(str.encode(json.dumps(response)))
 
 
@@ -222,7 +223,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         email = messageDict['email']
         password = messageDict['password']
         num = db.createUserAccount(email, password)
-        response['userid'] = num
+        response['userid'] = str(num)
         return response
 
     def update_user(self, messageDict, db):
@@ -235,7 +236,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         age = messageDict['age']
         location = messageDict['location']
         num = db.updateUserAccount(id, email, password, firstName, lastName, age, location)
-        response['success'] = num
+        response['success'] = str(num)
         return response
 
     def create_interest(self, messageDict, db):
@@ -294,3 +295,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             response['success'] = False
         response['userid'] = id
         return response
+
+
+httpd = HTTPServer(('localhost', 8000), MongoServerHandler)
+httpd.serve_forever()

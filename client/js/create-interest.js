@@ -12,7 +12,7 @@ $(document).ready(function() {
       name: name,
       categories: categories,
       description: description,
-      image: image
+      imageURL: image
     }
 
     $.ajax({
