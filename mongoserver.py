@@ -9,6 +9,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
     def _set_headers(self):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
 
     def do_HEAD(self):
@@ -91,17 +92,20 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         self.wfile.write(str.encode(json.dumps(response)))
 
 
-    def get_user(self, email, db):
+    def get_user(self, messageDict, db):
         response = {}
-        cursor = db.getUserByEmail(email)
+        if 'email' in messageDict:
+            cursor = db.getUserByEmail(messageDict['email'])
+        elif 'userid' in messageDict:
+            cursor = db.getUserByID(messageDict['userid'])
         for row in cursor:
             response['userid'] = str(row['_id'])
             response['firstname'] = row['firstName']
             response['lastname'] = row['lastName']
             response['age'] = row['age']
             response['location'] = row['location']
-            response['password'] = row['password']
             response['email'] = row['email']
+            response['interests'] = row['interests']
             break
         return response
     
@@ -112,6 +116,9 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             response['interestid'] = str(row['_id'])
             response['name'] = row['firstName']
             response['description'] = row['lastName']
+            response['imageURL'] = row['imageURL']
+            response['categories'] = row['categories']
+            response['users'] = row['users']
             break
         return response
 
@@ -123,6 +130,9 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             tmp['interestid'] = str(row['_id'])
             tmp['name'] = row['name']
             tmp['description'] = row['description']
+            tmp['imageURL'] = row['imageURL']
+            tmp['categories'] = row['categories']
+            tmp['users'] = row['users']
             response['interests'].append(tmp)
         return response
 
@@ -134,6 +144,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             tmp['categoryid'] = str(row['_id'])
             tmp['name'] = row['name']
             tmp['description'] = row['description']
+            tmp['interests'] = row['interests']
             response['categories'].append(tmp)
         return response
 
@@ -171,7 +182,9 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             tmp['interestid'] = str(row['_id'])
             tmp['name'] = row['name']
             tmp['description'] = row['description']
-            tmp['url'] = row['url']
+            tmp['imageURL'] = row['imageURL']
+            tmp['categories'] = row['categories']
+            tmp['users'] = row['users']
             response['interests'].append(tmp)
         return response
 
@@ -185,8 +198,8 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             tmp['lastname'] = row['lastName']
             tmp['age'] = row['age']
             tmp['location'] = row['location']
-            tmp['password'] = row['password']
             tmp['email'] = row['email']
+            tmp['interests'] = row['interests']
             response['users'].append(tmp)
         return response
 
@@ -198,7 +211,9 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             tmp['interestid'] = str(row['_id'])
             tmp['name'] = row['name']
             tmp['description'] = row['description']
-            tmp['url'] = row['url']
+            tmp['imageURL'] = row['imageURL']
+            tmp['categories'] = row['categories']
+            tmp['users'] = row['users']
             response['interests'].append(tmp)
         return response
 
@@ -208,6 +223,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         password = messageDict['password']
         num = db.createUserAccount(email, password)
         response['userid'] = num
+        return response
 
     def update_user(self, messageDict, db):
         response = {}
@@ -226,8 +242,9 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         response = {}
         name = messageDict['name']
         des = messageDict['description']
-        url = messageDict['url']
-        num = db.createInterest(name, des, url)
+        url = messageDict['imageURL']
+        categories = messageDict['categories']
+        num = db.createInterest(name, des, url, categories)
         response['interestid'] = num
         return response
 
@@ -277,7 +294,3 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             response['success'] = False
         response['userid'] = id
         return response
-
-
-httpd = HTTPServer(('localhost', 8000), MongoServerHandler)
-httpd.serve_forever()

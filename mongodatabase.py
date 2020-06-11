@@ -1,6 +1,4 @@
 import pymongo
-from bson import ObjectId
-
 class MongoDatabase():
     def __init__(self):
         self.connection = None
@@ -17,60 +15,65 @@ class MongoDatabase():
     # This selects all categories for a specified InterestID
     def getAllCategoriesForInterest(self, interestID):
         db = self.getConnection()
-        query = {"interestID": ObjectId(interestID)}
-        cursor = db.interestcategory.find(query)
+        query = {"$or" : [{"_id": interestID}, {"name":interestID}]}
+        cursor = db.interest.find_one(query)
         query = {"$or": []}
-        for c in cursor:
-            query["$or"].append({"_id": c["categoryID"]})
+        for cat in cursor['categories']:
+            query["$or"].append({"name": cat})
         cursor = db.category.find(query)
         return cursor
 
     # This selects all interests for a specified categoryID
     def getAllInterestForCategory(self, categoryID):
         db = self.getConnection()
-        query = {"categoryID": ObjectId(categoryID)}
-        cursor = db.interestcategory.find(query)
+        query = {"$or" : [{"_id": categoryID}, {"name": categoryID }]}
+        cursor = db.category.find_one(query)
         query = {"$or": []}
-        for c in cursor:
-            query["$or"].append({"_id": c["interestID"]})
+        for i in cursor['interests']:
+            query["$or"].append({"name": i})
         cursor = db.interest.find(query)
         return cursor
 
     # This selects all users for a specified interestID
     def getAllUsersForInterest(self, interestID):
         db = self.getConnection()
-        query = {"interestID": ObjectId(interestID)}
-        cursor = db.userinterest.find(query)
+        query = {"$or" : [{"_id": interestID}, {"name": interestID}]}
+        cursor = db.interest.find_one(query)
         query = {"$or": []}
-        for c in cursor:
-            query["$or"].append({"_id": c["userID"]})
+        for u in cursor['users']:
+            query["$or"].append({"_id": u})
         cursor = db.user.find(query)
         return cursor
 
     # This selects all interests for a specified userID
     def getAllInterestsForUser(self, userID):
         db = self.getConnection()
-        query = {"userID": ObjectId(userID)}
-        cursor = db.userinterest.find(query)
+        query = {"$or" : [{"_id": userID}, {"email": userID}]}
+        cursor = db.userinterest.find_one(query)
         query = {"$or": []}
-        for c in cursor:
-            query["$or"].append({"_id": c["interestID"]})
+        for i in cursor['interests']:
+            query["$or"].append({"name": i})
         cursor = db.interest.find(query)
         return cursor
 
     # Creates an entry in the UserInterest table that links the specified userID and interestID together
     def createUserInterest(self, userID, interestID):
         db = self.getConnection()
-        doc = {"userID": userID, "interestID": interestID}
-        x = db.userinterest.insert_one(doc)
-        return x.inserted_id
+        userUpdateQuery = {"$push" : {"interests" : interestID}}
+        interestUpdateQuery = {"$push" : {"users" : userID}}
+        userUpdate = db.user.update_one({"$or" : [{"_id" : userID}, {"email" : userID}]}, userUpdateQuery)
+        interestUpdate = db.interest.update_one({"$or" : [{"_id": interestID}, {"name": interestID}]}, interestUpdateQuery)
+        return userUpdate.modified_count == 1 and interestUpdate.modified_count == 1
 
     # Creates an entry in the InterestCategory table that links the specified interestID and categoryID together
     def createInterestCategory(self, interestID, categoryID):
         db = self.getConnection()
-        doc = {"interestID": interestID, "categoryID": categoryID}
-        x = db.interestcategory.insert_one(doc)
-        return x.inserted_id
+        categoryUpdateQuery = {"$push" : {"interests" : interestID}}
+        interestUpdateQuery = {"$push" : {"categories" : categoryID}}
+        categoryUpdate = db.category.update_one({"$or" : [{"_id" : categoryID}, {"name" : categoryID}]}, categoryUpdateQuery)
+        interestUpdate = db.interest.update_one({"$or" : [{"_id": interestID}, {"name": interestID}]}, interestUpdateQuery)
+        return categoryUpdate.modified_count == 1 and interestUpdate.modified_count == 1
+
 
     # On an update, the only required parameter is which user we are updating, blank parameters will not be updated to blank,
     # but skipped.
@@ -97,21 +100,26 @@ class MongoDatabase():
     # Every user needs an email and a password in order to create an account, returns id of document
     def createUserAccount(self, email, password):
         db = self.getConnection()
-        doc = {"email": email, "password": password}
+        doc = {"email": email, "password": password, "interests" : []}
         x = db.user.insert_one(doc)
         return x.inserted_id
 
     # This creates an interest page with the given name and description
-    def createInterest(self, name, description, url):
+    def createInterest(self, name, description, url, categoryList):
         db = self.getConnection()
-        doc = {"name": name, "description": description, 'url': url}
+        doc = {"name": name, "description": description, 'imageURL': url, 'categories': categoryList, 'users':[]}
         x = db.interest.insert_one(doc)
+        for category in categoryList:
+            if (not db.categories.count({'name' : category}) > 0):
+                # Category does not exist, create it.
+                self.createCategory(category, category)
+            self.createInterestCategory(x.inserted_id, category)
         return x.inserted_id
 
     # This creates a category page with the given name and description
     def createCategory(self, name, description):
         db = self.getConnection()
-        doc = {"name": name, "description": description}
+        doc = {"name": name, "description": description, 'interests':[]}
         x = db.category.insert_one(doc)
         return x.inserted_id
 
@@ -151,6 +159,12 @@ class MongoDatabase():
     def getUserByEmail(self, email):
         db = self.getConnection()
         query = {"email": email}
+        cursor = db.user.find(query)
+        return cursor
+
+    def getUserByID(self, id):
+        db = self.getConnection()
+        query = {"_id": id}
         cursor = db.user.find(query)
         return cursor
     
