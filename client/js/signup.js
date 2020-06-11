@@ -9,8 +9,8 @@ $(document).ready(function() {
   
     var url = "http://localhost:8000/createuser";
     var data = {
-      first: firstName,
-      last: lastName,
+      firstname: firstName,
+      lastname: lastName,
       email: email,
       age: age,
       location: location,
