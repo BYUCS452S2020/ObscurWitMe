@@ -181,6 +181,8 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         password = messageDict['password']
         num = db.createUserAccount(email, password)
         response['userid'] = str(num)
+        messageDict['userid'] = str(num)
+        self.update_user(messageDict, db)
         return response
 
     def update_user(self, messageDict, db):
@@ -188,8 +190,8 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         id = messageDict['userid']
         email = messageDict['email']
         password = messageDict['password']
-        firstName = messageDict['first']
-        lastName = messageDict['last']
+        firstName = messageDict['firstname']
+        lastName = messageDict['lastname']
         age = messageDict['age']
         location = messageDict['location']
         num = db.updateUserAccount(id, email, password, firstName, lastName, age, location)
@@ -299,10 +301,22 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         for row in cursor:
             tmp = {}
             tmp['userid'] = str(row['_id'])
-            tmp['firstname'] = row['firstName']
-            tmp['lastname'] = row['lastName']
-            tmp['age'] = row['age']
-            tmp['location'] = row['location']
+            if ('firstName' in row):
+                tmp['firstname'] = row['firstName']
+            else:
+                tmp['firstname'] = ''
+            if ('lastName' in row):
+                tmp['lastname'] = row['lastName']
+            else:
+                tmp['lastname'] = ''
+            if ('age' in row):
+                tmp['age'] = row['age']
+            else:
+                tmp['age'] = ''
+            if ('location' in row):
+                tmp['location'] = row['location']
+            else:
+                tmp['location'] = ''
             tmp['email'] = row['email']
             intList = []
             for item in row['interests']:
