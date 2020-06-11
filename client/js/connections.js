@@ -19,7 +19,7 @@ function createClickableList(list) {
   $("#connections").append($ul);
 
   $(list).each(function(i) {
-    var $li = $("<li></li>").text(list[i].username);
+    var $li = $("<li></li>").text(`${list[i].firstname} ${list[i].lastname}`);
     $li.click(function(e) {
       e.preventDefault();
       goToUserPage(list[i].userid);
@@ -46,7 +46,8 @@ function getPotentialConnections() {
     type: "POST",
     data: JSON.stringify(data),
     success: function(data, status) {
-      createClickableList(data["connections"]);
+      console.log(data);
+      createClickableList(data["users"]);
 
       if ($("#connections ul li").length < data["totalcount"]) {
         sessionStorage.setItem("conn_startat", (startat + 10).toString());

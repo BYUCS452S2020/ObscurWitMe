@@ -25,6 +25,8 @@ function getUser() {
     type: "POST",
     data: JSON.stringify(data),
     success: function(data, success) {
+      console.log(data);
+
       var name = `${data["firstname"]} ${data["lastname"]}`;
       window.name = name;
 
@@ -77,6 +79,8 @@ function getInterests() {
     type: "POST",
     data: JSON.stringify(data),
     success: function(data, success) {
+      console.log(data);
+      
       var interests = data["interests"];
       createClickableList(interests);
     },
