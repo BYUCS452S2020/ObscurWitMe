@@ -69,7 +69,8 @@ function getInterests() {
   // connect to server
 
   var url = "http://localhost:8000/getuserinterests";
-  var userid = sessionStorage.getItem("userid");
+  var userid = window.location.hash.substring(1);
+  console.log(userid);
   var data = {
     userid: userid
   }
