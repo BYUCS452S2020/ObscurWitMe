@@ -69,7 +69,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         elif self.path == '/addinterestcategory':
             response = self.add_interest_category(messageDict, db)
         elif self.path == '/getuser':
-            response = self.get_user(messageDict['email'], db)
+            response = self.get_user(messageDict, db)
         elif self.path == '/getinterest':
             response = self.get_interest(messageDict['interestid'], db)
         elif self.path == '/getcategoryinterests':
@@ -245,7 +245,8 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         cursor = db.getConnections(userID)
         results = self.convertCursorToUserObjects(cursor)
         for item in results:
-            response['users'].append(item)
+            if (str(item['userid']) != str(userID)):
+                response['users'].append(item)
         return response
 
     def login(self, messageDict, db):
