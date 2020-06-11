@@ -15,14 +15,13 @@ $(document).ready(function() {
       data: JSON.stringify(data),
       success: function(data, status) {
         alert("New Interest Added Successfully!");
+        window.location.href = "interests.html";
       },
       error: function(error) {
         console.warn(error);
         alert("Could not add interest :(");
       }
     });
-
-    // window.location.href = "interests.html";
   });
 
   $("info").ready(getInterest());

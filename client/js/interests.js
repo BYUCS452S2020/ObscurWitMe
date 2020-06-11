@@ -3,9 +3,7 @@ $(document).ready(function() {
 
 
   $("interests").ready(function() {
-    // TODO: fix
-    var url = "http://localhost:8000/getallinterests";
-    // var url = "http://localhost:8000/getsearchinterests";
+    var url = "http://localhost:8000/getuserinterests";
     var data = {
       userid: sessionStorage.getItem("userid")
     }
@@ -41,7 +39,7 @@ $(document).ready(function() {
 
     $.ajax({
       url: url,
-      type: "GET",
+      type: "POST",
       data: JSON.stringify(data),
       success: function(data, status) {
         var list = data["interests"];
@@ -187,7 +185,7 @@ function createClickableList(list, element) {
     var $li = $("<li></li>").text(list[i].name);
     $li.click(function(e) {
       e.preventDefault();
-      goToUserPage(list[i].interestid);
+      goToInterestPage(list[i].interestid);
     });
     $($ul).append($li);
   });
