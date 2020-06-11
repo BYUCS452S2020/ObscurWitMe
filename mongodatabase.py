@@ -50,7 +50,7 @@ class MongoDatabase():
     def getAllInterestsForUser(self, userID):
         db = self.getConnection()
         query = {"_id": ObjectId(userID)}
-        cursor = db.userinterest.find_one(query)
+        cursor = db.user.find_one(query)
         query = {"$or": []}
         for i in cursor['interests']:
             query["$or"].append({"_id": ObjectId(i)})
