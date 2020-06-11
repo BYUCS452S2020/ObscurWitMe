@@ -50,7 +50,7 @@ class MongoDatabase():
     def getAllInterestsForUser(self, userID):
         db = self.getConnection()
         query = {"_id": ObjectId(userID)}
-        cursor = db.userinterest.find_one(query)
+        cursor = db.user.find_one(query)
         query = {"$or": []}
         for i in cursor['interests']:
             query["$or"].append({"_id": ObjectId(i)})
@@ -111,11 +111,11 @@ class MongoDatabase():
         doc = {"name": name, "description": description, 'imageURL': url, 'categories': [], 'users':[]}
         x = db.interest.insert_one(doc)
         for category in categoryList:
-            if (not db.categories.count({'name' : category}) > 0):
+            if (not db.category.count({'name' : category}) > 0):
                 # Category does not exist, create it.
                 ctgID = self.createCategory(category, category)
             else:
-                ctgID = db.categories.find_one({'name' : category})['_id']
+                ctgID = db.category.find_one({'name' : category})['_id']
             self.createInterestCategory(x.inserted_id, ctgID)
         return x.inserted_id
 
