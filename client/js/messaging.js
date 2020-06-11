@@ -23,6 +23,7 @@ function getInbox() {
     type: "POST",
     data: JSON.stringify(data),
     success: function(data, status) {
+      console.log(data);
       var list = data["receivedmessages"];
       buildInbox(list);
     },
@@ -61,6 +62,7 @@ function getOutbox() {
     type: "POST",
     data: JSON.stringify(data),
     success: function(data, status) {
+      console.log(data);
       var list = data["sentmessages"];
       buildOutbox(list);
     },
