@@ -1,4 +1,5 @@
 import pymongo
+from bson import ObjectId
 class MongoDatabase():
     def __init__(self):
         self.connection = None
@@ -15,7 +16,7 @@ class MongoDatabase():
     # This selects all categories for a specified InterestID
     def getAllCategoriesForInterest(self, interestID):
         db = self.getConnection()
-        query = {"$or" : [{"_id": interestID}, {"name":interestID}]}
+        query = {"$or" : [{"_id": ObjectId(interestID)}, {"name":interestID}]}
         cursor = db.interest.find_one(query)
         query = {"$or": []}
         for cat in cursor['categories']:
@@ -26,7 +27,7 @@ class MongoDatabase():
     # This selects all interests for a specified categoryID
     def getAllInterestForCategory(self, categoryID):
         db = self.getConnection()
-        query = {"$or" : [{"_id": categoryID}, {"name": categoryID }]}
+        query = {"$or" : [{"_id": ObjectId(categoryID)}, {"name": categoryID }]}
         cursor = db.category.find_one(query)
         query = {"$or": []}
         for i in cursor['interests']:
@@ -37,18 +38,18 @@ class MongoDatabase():
     # This selects all users for a specified interestID
     def getAllUsersForInterest(self, interestID):
         db = self.getConnection()
-        query = {"$or" : [{"_id": interestID}, {"name": interestID}]}
+        query = {"$or" : [{"_id": ObjectId(interestID)}, {"name": interestID}]}
         cursor = db.interest.find_one(query)
         query = {"$or": []}
         for u in cursor['users']:
-            query["$or"].append({"_id": u})
+            query["$or"].append({"_id": ObjectId(u)})
         cursor = db.user.find(query)
         return cursor
 
     # This selects all interests for a specified userID
     def getAllInterestsForUser(self, userID):
         db = self.getConnection()
-        query = {"$or" : [{"_id": userID}, {"email": userID}]}
+        query = {"$or" : [{"_id": ObjectId(userID)}, {"email": userID}]}
         cursor = db.userinterest.find_one(query)
         query = {"$or": []}
         for i in cursor['interests']:
@@ -61,8 +62,8 @@ class MongoDatabase():
         db = self.getConnection()
         userUpdateQuery = {"$push" : {"interests" : interestID}}
         interestUpdateQuery = {"$push" : {"users" : userID}}
-        userUpdate = db.user.update_one({"$or" : [{"_id" : userID}, {"email" : userID}]}, userUpdateQuery)
-        interestUpdate = db.interest.update_one({"$or" : [{"_id": interestID}, {"name": interestID}]}, interestUpdateQuery)
+        userUpdate = db.user.update_one({"$or" : [{"_id" : ObjectId(userID)}, {"email" : userID}]}, userUpdateQuery)
+        interestUpdate = db.interest.update_one({"$or" : [{"_id": ObjectId(interestID)}, {"name": interestID}]}, interestUpdateQuery)
         return userUpdate.modified_count == 1 and interestUpdate.modified_count == 1
 
     # Creates an entry in the InterestCategory table that links the specified interestID and categoryID together
@@ -70,8 +71,8 @@ class MongoDatabase():
         db = self.getConnection()
         categoryUpdateQuery = {"$push" : {"interests" : interestID}}
         interestUpdateQuery = {"$push" : {"categories" : categoryID}}
-        categoryUpdate = db.category.update_one({"$or" : [{"_id" : categoryID}, {"name" : categoryID}]}, categoryUpdateQuery)
-        interestUpdate = db.interest.update_one({"$or" : [{"_id": interestID}, {"name": interestID}]}, interestUpdateQuery)
+        categoryUpdate = db.category.update_one({"$or" : [{"_id" : ObjectId(categoryID)}, {"name" : categoryID}]}, categoryUpdateQuery)
+        interestUpdate = db.interest.update_one({"$or" : [{"_id": ObjectId(interestID)}, {"name": interestID}]}, interestUpdateQuery)
         return categoryUpdate.modified_count == 1 and interestUpdate.modified_count == 1
 
 
@@ -93,7 +94,7 @@ class MongoDatabase():
         if (location != ''):
             update["$set"]['location'] = location
 
-        filter = {"_id": userID}
+        filter = {"_id": ObjectId(userID)}
         cursor = db.user.update_one(filter, update)
         return cursor.matched_count
 
@@ -164,13 +165,13 @@ class MongoDatabase():
 
     def getUserByID(self, id):
         db = self.getConnection()
-        query = {"_id": id}
+        query = {"_id": ObjectId(id)}
         cursor = db.user.find(query)
         return cursor
     
     def getInterestByID(self, interestID):
         db = self.getConnection()
-        query = {"_id": interestID}
+        query = {"_id": ObjectId(interestID)}
         cursor = db.interest.find(query)
         return cursor
 
