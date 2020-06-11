@@ -16,7 +16,7 @@ class MongoDatabase():
     # This selects all categories for a specified InterestID
     def getAllCategoriesForInterest(self, interestID):
         db = self.getConnection()
-        query = {"$or" : [{"_id": ObjectId(interestID)}, {"name":interestID}]}
+        query = {"_id": ObjectId(interestID)}
         cursor = db.interest.find_one(query)
         query = {"$or": []}
         for cat in cursor['categories']:
@@ -27,7 +27,7 @@ class MongoDatabase():
     # This selects all interests for a specified categoryID
     def getAllInterestForCategory(self, categoryID):
         db = self.getConnection()
-        query = {"$or" : [{"_id": ObjectId(categoryID)}, {"name": categoryID }]}
+        query = {"_id": ObjectId(categoryID)}
         cursor = db.category.find_one(query)
         query = {"$or": []}
         for i in cursor['interests']:
@@ -38,7 +38,7 @@ class MongoDatabase():
     # This selects all users for a specified interestID
     def getAllUsersForInterest(self, interestID):
         db = self.getConnection()
-        query = {"$or" : [{"_id": ObjectId(interestID)}, {"name": interestID}]}
+        query = {"_id": ObjectId(interestID)}
         cursor = db.interest.find_one(query)
         query = {"$or": []}
         for u in cursor['users']:
@@ -49,7 +49,7 @@ class MongoDatabase():
     # This selects all interests for a specified userID
     def getAllInterestsForUser(self, userID):
         db = self.getConnection()
-        query = {"$or" : [{"_id": ObjectId(userID)}, {"email": userID}]}
+        query = {"_id": ObjectId(userID)}
         cursor = db.userinterest.find_one(query)
         query = {"$or": []}
         for i in cursor['interests']:
@@ -62,8 +62,8 @@ class MongoDatabase():
         db = self.getConnection()
         userUpdateQuery = {"$push" : {"interests" : interestID}}
         interestUpdateQuery = {"$push" : {"users" : userID}}
-        userUpdate = db.user.update_one({"$or" : [{"_id" : ObjectId(userID)}, {"email" : userID}]}, userUpdateQuery)
-        interestUpdate = db.interest.update_one({"$or" : [{"_id": ObjectId(interestID)}, {"name": interestID}]}, interestUpdateQuery)
+        userUpdate = db.user.update_one({"_id" : ObjectId(userID)}, userUpdateQuery)
+        interestUpdate = db.interest.update_one({"_id": ObjectId(interestID)}, interestUpdateQuery)
         return userUpdate.modified_count == 1 and interestUpdate.modified_count == 1
 
     # Creates an entry in the InterestCategory table that links the specified interestID and categoryID together
@@ -71,8 +71,8 @@ class MongoDatabase():
         db = self.getConnection()
         categoryUpdateQuery = {"$push" : {"interests" : interestID}}
         interestUpdateQuery = {"$push" : {"categories" : categoryID}}
-        categoryUpdate = db.category.update_one({"$or" : [{"_id" : ObjectId(categoryID)}, {"name" : categoryID}]}, categoryUpdateQuery)
-        interestUpdate = db.interest.update_one({"$or" : [{"_id": ObjectId(interestID)}, {"name": interestID}]}, interestUpdateQuery)
+        categoryUpdate = db.category.update_one({"_id" : ObjectId(categoryID)}, categoryUpdateQuery)
+        interestUpdate = db.interest.update_one({"_id": ObjectId(interestID)}, interestUpdateQuery)
         return categoryUpdate.modified_count == 1 and interestUpdate.modified_count == 1
 
 
