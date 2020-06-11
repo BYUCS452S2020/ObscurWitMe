@@ -34,10 +34,7 @@ function sendMessage() {
       console.log(error);
       alert("Could not send message :(");
     }
-  });  
-
-  window.location.href="messaging.html";
-
+  });
 }
 
 function checkRecipient() {

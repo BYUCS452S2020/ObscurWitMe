@@ -130,6 +130,7 @@ class MongoDatabase():
     def createMessage(self, fromUserID, toUserID, body):
         db = self.getConnection()
         doc = {"fromUserID": fromUserID, "toUserID": toUserID, "body": body}
+        print(doc)
         x = db.message.insert_one(doc)
         return x.inserted_id
 
