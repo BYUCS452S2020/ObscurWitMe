@@ -3,7 +3,9 @@ $(document).ready(function() {
 
 
   $("interests").ready(function() {
-    var url = "http://localhost:8000/getuserinterests";
+    // TODO: fix
+    var url = "http://localhost:8000/getallinterests";
+    // var url = "http://localhost:8000/getsearchinterests";
     var data = {
       userid: sessionStorage.getItem("userid")
     }
@@ -26,7 +28,9 @@ $(document).ready(function() {
   });
 
   $("#sports_btn").click(function() {
-    var url = "http://localhost:8000/getsearchinterests";
+    // TODO: fix
+    var url = "http://localhost:8000/getallinterests";
+    // var url = "http://localhost:8000/getsearchinterests";
     var startat = parseInt(sessionStorage.getItem("sports_startat"));
     
     var data = {
@@ -37,7 +41,7 @@ $(document).ready(function() {
 
     $.ajax({
       url: url,
-      type: "POST",
+      type: "GET",
       data: JSON.stringify(data),
       success: function(data, status) {
         var list = data["interests"];
@@ -58,7 +62,9 @@ $(document).ready(function() {
   });
 
   $("#movies_btn").click(function() {
-    var url = "http://localhost:8000/getsearchinterests";
+    // TODO: fix
+    var url = "http://localhost:8000/getallinterests";
+    // var url = "http://localhost:8000/getsearchinterests";
     var startat = parseInt(sessionStorage.getItem("movies_startat"));
     
     var data = {
@@ -90,7 +96,9 @@ $(document).ready(function() {
   });
 
   $("#nature_btn").click(function() {
-    var url = "http://localhost:8000/getsearchinterests";
+    // TODO: fix
+    var url = "http://localhost:8000/getallinterests";
+    // var url = "http://localhost:8000/getsearchinterests";
     var startat = parseInt(sessionStorage.getItem("nature_startat"));
     
     var data = {
@@ -125,7 +133,9 @@ $(document).ready(function() {
     var text = $("#search").val();
     console.log("searching for: " + text);
 
-    var url = "http://localhost:8000/getsearchinterests";
+    // TODO: fix
+    var url = "http://localhost:8000/getallinterests";
+    // var url = "http://localhost:8000/getsearchinterests";
     var startat = parseInt(sessionStorage.getItem("search_startat"));
 
     var data = {

@@ -22,7 +22,7 @@ $(document).ready(function() {
       }
     });
 
-    window.location.href = "interests.html";
+    // window.location.href = "interests.html";
   });
 
   $("info").ready(getInterest());
@@ -41,6 +41,7 @@ function getInterest() {
     type: "POST",
     data: JSON.stringify(data),
     success: function(data, status) {
+      console.log(data);
       $("#header").append(data["name"]);
 
       var categories = data["categories"].join(", ");

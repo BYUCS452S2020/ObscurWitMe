@@ -51,6 +51,7 @@ function getPotentialConnections() {
       if ($("#connections ul li").length < data["totalcount"]) {
         sessionStorage.setItem("conn_startat", (startat + 10).toString());
       }
+      // TODO: more button
     },
     error: function(error) {
       console.warn(error);
