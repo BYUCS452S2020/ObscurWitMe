@@ -180,6 +180,8 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         password = messageDict['password']
         num = db.createUserAccount(email, password)
         response['userid'] = str(num)
+        messageDict['userid'] = str(num)
+        self.update_user(messageDict, db)
         return response
 
     def update_user(self, messageDict, db):
@@ -187,8 +189,8 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         id = messageDict['userid']
         email = messageDict['email']
         password = messageDict['password']
-        firstName = messageDict['first']
-        lastName = messageDict['last']
+        firstName = messageDict['firstname']
+        lastName = messageDict['lastname']
         age = messageDict['age']
         location = messageDict['location']
         num = db.updateUserAccount(id, email, password, firstName, lastName, age, location)
