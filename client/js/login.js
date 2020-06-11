@@ -16,8 +16,12 @@ $(document).ready(function() {
       type: "POST",
       data: JSON.stringify(data),
       success: function(data, status) {
-        sessionStorage.setItem("userid", data["userid"]);
-        window.location.href="main.html";
+        if (data["success"]) {
+          sessionStorage.setItem("userid", data["userid"]);
+          window.location.href="main.html";
+        } else {
+          alert("Invalid username or password");
+        } 
       }, 
       error: function(error) {
         // TODO: invalid password?
