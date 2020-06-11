@@ -36,6 +36,8 @@ function getInbox() {
 // TODO: format properly
 function buildInbox(list) {
   for (var i = 0; i < list.length; i++) {
+    var date = new Date(list[i].time * 1000);
+    console.log(date);
     var details = document.createElement("details");
     var summary = document.createElement("summary");
     summary.appendChild(document.createTextNode(list[i].fromid + "------" + list[i].time));
