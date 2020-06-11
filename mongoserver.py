@@ -134,7 +134,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             tmp['fromid'] = str(row['fromUserID'])
             tmp['toid'] = str(row['toUserID'])
             tmp['body'] = row['body']
-            tmp['time'] = row['_id'].getTimestamp()
+            tmp['time'] = row['_id'].generation_time
             response['sentmessages'].append(tmp)
         return response
 
@@ -147,7 +147,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             tmp['fromid'] = str(row['fromUserID'])
             tmp['toid'] = str(row['toUserID'])
             tmp['body'] = row['body']
-            tmp['time'] = row['_id'].getTimestamp()
+            tmp['time'] = row['_id'].generation_time
             response['receivedmessages'].append(tmp)
         return response
 
