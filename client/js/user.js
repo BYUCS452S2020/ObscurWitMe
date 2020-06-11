@@ -22,6 +22,7 @@ function getUser() {
 
   $.ajax({
     url: url,
+    type: "POST",
     data: JSON.stringify(data),
     success: function(data, success) {
       var name = `${data["firstname"]} ${data["lastname"]}`;
@@ -73,6 +74,7 @@ function getInterests() {
 
   $.ajax({
     url: url,
+    type: "POST",
     data: JSON.stringify(data),
     success: function(data, success) {
       var interests = data["interests"];

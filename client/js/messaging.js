@@ -20,6 +20,7 @@ function getInbox() {
 
   $.ajax({
     url: url,
+    type: "POST",
     data: JSON.stringify(data),
     success: function(data, status) {
       var list = data["receivedmessages"];
@@ -57,6 +58,7 @@ function getOutbox() {
 
   $.ajax({
     url: url,
+    type: "POST",
     data: JSON.stringify(data),
     success: function(data, status) {
       var list = data["sentmessages"];

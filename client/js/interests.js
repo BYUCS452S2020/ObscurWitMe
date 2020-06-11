@@ -25,11 +25,107 @@ $(document).ready(function() {
     });
   });
 
+  $("#sports_btn").click(function() {
+    var url = "http://localhost:8000/getsearchinterests";
+    var startat = parseInt(sessionStorage.getItem("sports_startat"));
+    
+    var data = {
+      startat: startat,
+      count: 10,
+      query: "sports"
+    }
+
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: JSON.stringify(data),
+      success: function(data, status) {
+        var list = data["interests"];
+        console.log(list);
+        createClickableList(list, $("#results"));
+
+        if ($("#results ul li").length < data["totalcount"]) {
+          sessionStorage.setItem("sports_startat", (startat + 10).toString());
+          toggleMoreButton(false);
+        } else {
+          toggleMoreButton(true);
+        }
+      },
+      error: function(error) {
+        console.warn(error);
+      }
+    });
+  });
+
+  $("#movies_btn").click(function() {
+    var url = "http://localhost:8000/getsearchinterests";
+    var startat = parseInt(sessionStorage.getItem("movies_startat"));
+    
+    var data = {
+      startat: startat,
+      count: 10,
+      query: "movies"
+    }
+
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: JSON.stringify(data),
+      success: function(data, status) {
+        var list = data["interests"];
+        console.log(list);
+        createClickableList(list, $("#results"));
+
+        if ($("#results ul li").length < data["totalcount"]) {
+          sessionStorage.setItem("movies_startat", (startat + 10).toString());
+          toggleMoreButton(false);
+        } else {
+          toggleMoreButton(true);
+        }
+      },
+      error: function(error) {
+        console.warn(error);
+      }
+    });
+  });
+
+  $("#nature_btn").click(function() {
+    var url = "http://localhost:8000/getsearchinterests";
+    var startat = parseInt(sessionStorage.getItem("nature_startat"));
+    
+    var data = {
+      startat: startat,
+      count: 10,
+      query: "nature"
+    }
+
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: JSON.stringify(data),
+      success: function(data, status) {
+        var list = data["interests"];
+        console.log(list);
+        createClickableList(list, $("#results"));
+
+        if ($("#results ul li").length < data["totalcount"]) {
+          sessionStorage.setItem("nature_startat", (startat + 10).toString());
+          toggleMoreButton(false);
+        } else {
+          toggleMoreButton(true);
+        }
+      },
+      error: function(error) {
+        console.warn(error);
+      }
+    });
+  });
+
   $("#search_btn").click(function() {
     var text = $("#search").val();
     console.log("searching for: " + text);
 
-    var url = "http://localhost:8000/getallinterests";
+    var url = "http://localhost:8000/getsearchinterests";
     var startat = parseInt(sessionStorage.getItem("search_startat"));
 
     var data = {
@@ -51,6 +147,9 @@ $(document).ready(function() {
 
         if ($("#results ul li").length < data["totalcount"]) {
           sessionStorage.setItem("search_startat", (startat + 10).toString());
+          toggleMoreButton(false);
+        } else {
+          toggleMoreButton(true);
         }
       }, 
       error: function(error) {
@@ -82,4 +181,12 @@ function createClickableList(list, element) {
     });
     $($ul).append($li);
   });
+}
+
+function toggleMoreButton(hide) {
+  if (hide) {
+    $("#more").hide();
+  } else {
+    $("#more").show();
+  }
 }

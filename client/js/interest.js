@@ -11,8 +11,8 @@ $(document).ready(function() {
 
     $.ajax({
       url: url,
-      data: JSON.stringify(data),
       type: "POST",
+      data: JSON.stringify(data),
       success: function(data, status) {
         alert("New Interest Added Successfully!");
       },
@@ -38,8 +38,8 @@ function getInterest() {
 
   $.ajax({
     url: url,
-    data: JSON.stringify(data),
     type: "POST",
+    data: JSON.stringify(data),
     success: function(data, status) {
       var interest = data["interest"];
       

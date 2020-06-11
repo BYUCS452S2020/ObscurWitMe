@@ -43,6 +43,7 @@ function getPotentialConnections() {
 
   $.ajax({
     url: url,
+    type: "POST",
     data: JSON.stringify(data),
     success: function(data, status) {
       createClickableList(data["connections"]);
