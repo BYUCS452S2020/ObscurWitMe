@@ -1,31 +1,61 @@
-document.getElementById("connections").addEventListener("load", getPotentialConnections());
+$(document).ready(function() {
+  sessionStorage.setItem("conn_startat", "0");
 
-function goToUserPage(username) {
-  console.log(username);
+  $("connections").ready(function() {
+    getPotentialConnections();
+  });
+});
 
-  // change to userid eventually
 
-  window.location.href="user.html#" + username;
+
+function goToUserPage(userid) {
+  console.log(userid);
+
+  window.location.href="user.html#" + userid;
 }
 
 function createClickableList(list) {
-  for (var i = 0; i < list.length; i++) {
-    var p = document.createElement("p");
-    p.appendChild(document.createTextNode(list[i]));
-    p.addEventListener("click", function() { goToUserPage(this.innerText) });
-    document.getElementById("connections").appendChild(p);
-  }
+  var $ul = $("<ul></ul>");
+  $("#connections").append($ul);
+
+  $(list).each(function(i) {
+    var $li = $("<li></li>").text(`${list[i].firstname} ${list[i].lastname}`);
+    $li.click(function(e) {
+      e.preventDefault();
+      goToUserPage(list[i].userid);
+    });
+    $($ul).append($li);
+  });
 }
 
 function getPotentialConnections() {
   console.log("getting connections");
-  // connect to server
+  
+  var url = "http://localhost:8000/getconnections";
+  var userid = sessionStorage.getItem("userid");
+  var startat = parseInt(sessionStorage.getItem("conn_startat"));
+   
+  var data = {
+    userid: userid,
+    startat: startat,
+    count: 10
+  }
 
-  list = []
-  list.push("Mike");
-  list.push("Sarah");
-  list.push("Joey");
-  list.push("Jessica");
+  $.ajax({
+    url: url,
+    type: "POST",
+    data: JSON.stringify(data),
+    success: function(data, status) {
+      console.log(data);
+      createClickableList(data["users"]);
 
-  createClickableList(list);
+      if ($("#connections ul li").length < data["totalcount"]) {
+        sessionStorage.setItem("conn_startat", (startat + 10).toString());
+      }
+      // TODO: more button
+    },
+    error: function(error) {
+      console.warn(error);
+    }
+  });
 }

@@ -95,6 +95,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
 
         # send the response, current just sends back what was received
         self._set_headers()
+        print(response)
         self.wfile.write(str.encode(json.dumps(response)))
 
 
@@ -122,6 +123,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         response = {'interests' : []}
         cursor = db.searchInterest(messageDict['query'])
         results = self.convertCursorToInterestObjects(cursor)
+        print(results);
         for item in results:
             response['interests'].append(item)
         return response
@@ -274,6 +276,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
     def convertCursorToInterestObjects(self, cursor):
         result = []
         for row in cursor:
+            print("row")
             tmp = {}
             tmp['interestid'] = str(row['_id'])
             tmp['name'] = row['name']

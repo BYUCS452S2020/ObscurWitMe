@@ -1,65 +1,60 @@
 $(document).ready(function() {
   $("#add").click(function() {
-    // var interestid = sessionStorage.getItem("interestid");
-    // var userid = sessionStorage.getItem("userid");
+    var interestid = window.location.hash.substring(1);
+    var userid = sessionStorage.getItem("userid");
 
-    // var url = "http://localhost:8000/addinterest"
-    // var data = {
-    //   interestid: interestid,
-    //   userid: userid
-    // }
+    var url = "http://localhost:8000/addinterest"
+    var data = {
+      interestid: interestid,
+      userid: userid
+    }
 
-    // $.ajax({
-    //   url: url,
-    //   data: JSON.stringify(data),
-    //   type: "POST",
-    //   success: function(data, status) {
-        
-    //   },
-    //   error: function(error) {
-
-    //   }
-    // });
-
-    window.history.back();
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: JSON.stringify(data),
+      success: function(data, status) {
+        alert("New Interest Added Successfully!");
+        window.location.href = "interests.html";
+      },
+      error: function(error) {
+        console.warn(error);
+        alert("Could not add interest :(");
+      }
+    });
   });
 
-  $("header").ready(getHeader());
   $("info").ready(getInterest());
 });
 
-function getHeader() {
-  var header = window.location.hash.substring(1);
-  console.log(header);
-
-  document.getElementById("header").innerText = decodeURI(header);
-}
-
 function getInterest() {
-  var name = window.location.hash.substring(1);
+  var interestid = window.location.hash.substring(1);
 
-  // var url = "http://localhost:8000/getinterest";
-  // var data = {
-  //   name: name
-  // };
+  var url = "http://localhost:8000/getinterest";
+  var data = {
+    interestid: interestid
+  };
 
-  // $.ajax({
-  //   url: url,
-  //   data: JSON.stringify(data),
-  //   type: "POST",
-  //   success: function(data, status) {
+  $.ajax({
+    url: url,
+    type: "POST",
+    data: JSON.stringify(data),
+    success: function(data, status) {
+      console.log(data);
+      $("#header").append(data["name"]);
 
-  //   }, 
-  //   error: function(error) {
+      var categories = data["categories"].join(", ");
 
-  //   }
-  // });
+      var $p_categories = $("<p></p>").text("Categories: " + categories);
+      var $p_description = $("<p></p>").text("Description: " + data["description"]);
+      var $img = $(`<img src=${data["imageURL"]} alt="Image of Activity" style="width:500px;height:500px">`);
 
-  interest = {category: "Cool stuff", description: "Really fun activity!", thumbnail: "url" };
-
-  for (let key in interest) {
-    var p = document.createElement("p");
-    p.appendChild(document.createTextNode(key + ": " + interest[key]));
-    document.getElementById("info").appendChild(p);
-  }
+      $("#info").append($p_categories);
+      $("#info").append($p_description);
+      $("#info").append($img);
+    }, 
+    error: function(error) {
+      console.warn(error);
+    }
+  });  
 }

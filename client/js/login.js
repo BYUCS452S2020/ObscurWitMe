@@ -3,7 +3,7 @@ $(document).ready(function() {
     var email = document.getElementById("email").value;
     var passwd = document.getElementById("passwd").value;
   
-    var url = "http://127.0.0.1:8000/login";
+    var url = "http://localhost:8000/login";
     var data = {
       email: email,
       password: passwd
@@ -20,7 +20,8 @@ $(document).ready(function() {
         window.location.href="main.html";
       }, 
       error: function(error) {
-        console.log("error occurred: ${error}");
+        // TODO: invalid password?
+        console.log("error while logging in: ${error}");
       }
     });
   });

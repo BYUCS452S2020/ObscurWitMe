@@ -1,21 +1,64 @@
-document.getElementById("inbox").addEventListener("load", getInbox());
-document.getElementById("outbox").addEventListener("load", getOutbox());
+$(document).ready(function() {
+  $("inbox").ready(function() {
+    getInbox();
+  });
 
+  $("outbox").ready(function() {
+    getOutbox();
+  });
+});
 
+function getTime(time) {
+  var timestamp = time.substring(10, time.length - 1);
+
+  var date = new Date(timestamp * 1000);
+  var day = date.getDate();
+  var month = date.getMonth();
+  // Hours part from the timestamp
+  var hours = date.getHours();
+  // Minutes part from the timestamp
+  var minutes = "0" + date.getMinutes();
+  // Seconds part from the timestamp
+  var seconds = "0" + date.getSeconds();
+
+  // Will display time in 10:30:23 format
+  var formattedTime = month + '/' + day + ", " + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+  console.log(formattedTime);
+
+  return formattedTime;
+}
 
 function getInbox() {
   console.log("getting inbox");
   // connect to server
 
-  var list = []
-  list.push({fromUser: "Mike", body: "Hello, this is Mike", timestamp: "May 17, 6:04 pm"});
-  list.push({fromUser: "Sarah", body: "Hello, this is Sarah", timestamp: "May 22, 10:43 am"});
-  list.push({fromUser: "David", body: "Hello, this is David", timestamp: "May 20, 12:15 pm"});
+  var url = "http://localhost:8000/getreceivedmessages";
+  var data = {
+    userid: sessionStorage.getItem("userid")
+  }
 
+  $.ajax({
+    url: url,
+    type: "POST",
+    data: JSON.stringify(data),
+    success: function(data, status) {
+      console.log(data);
+      var list = data["receivedmessages"];
+      buildInbox(list);
+    },
+    error: function(error) {
+      console.warn(`error while getting inbox: ${error}`)
+    }
+  });  
+}
+
+function buildInbox(list) {
   for (var i = 0; i < list.length; i++) {
+    var formattedTime = getTime(list[i].time);
+
     var details = document.createElement("details");
     var summary = document.createElement("summary");
-    summary.appendChild(document.createTextNode(list[i].fromUser + "------" + list[i].timestamp));
+    summary.appendChild(document.createTextNode(list[i].fromid + "------" + formattedTime));
     var p = document.createElement("p");
     p.appendChild(document.createTextNode(list[i].body));
     details.appendChild(summary);
@@ -29,15 +72,33 @@ function getOutbox() {
   console.log("getting outbox");
   // connect to server
 
-  var list = []
-  list.push({toUser: "Mike", body: "Hi there!", timestamp: "May 17, 6:15 pm"});
-  list.push({toUser: "Sarah", body: "Nice to meet you :)", timestamp: "May 22, 11:22 am"});
-  list.push({toUser: "David", body: "Hi David, how are you?", timestamp: "May 20, 11:59 am"});
+  var url = "http://localhost:8000/getsentmessages";
+  var data = {
+    userid: sessionStorage.getItem("userid")
+  }
 
+  $.ajax({
+    url: url,
+    type: "POST",
+    data: JSON.stringify(data),
+    success: function(data, status) {
+      console.log(data);
+      var list = data["sentmessages"];
+      buildOutbox(list);
+    },
+    error: function(error) {
+      console.warn(`error while getting outbox: ${error}`)
+    }
+  });
+}
+
+function buildOutbox(list) {
   for (var i = 0; i < list.length; i++) {
+    var formattedTime = getTime(list[i].time);
+
     var details = document.createElement("details");
     var summary = document.createElement("summary");
-    summary.appendChild(document.createTextNode(list[i].toUser + "------" + list[i].timestamp));
+    summary.appendChild(document.createTextNode(list[i].toid + "------" + formattedTime));
     var p = document.createElement("p");
     p.appendChild(document.createTextNode(list[i].body));
     details.appendChild(summary);

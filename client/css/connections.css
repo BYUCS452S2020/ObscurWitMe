@@ -1,8 +1,14 @@
 .container {
-  width: 1%;
+  width: fit-content;
 }
 
 .connections {
+  width: fit-content;
+}
+
+ul li {
+  cursor: pointer;
+  list-style-position: inside;
   width: fit-content;
 }
 

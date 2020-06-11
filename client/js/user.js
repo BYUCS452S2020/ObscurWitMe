@@ -1,61 +1,100 @@
-document.getElementById("info").addEventListener("load", getUser());
-document.getElementById("interests").addEventListener("load", getInterests());
+$(document).ready(function() {
+  $("info").ready(function() {
+    getUser();
+  });
+
+  $("interests").ready(function() {
+    getInterests();
+  });
+});
 
 
 function getUser() {
-  var username = window.location.hash.substring(1);
-  console.log(username);
+  var userid = window.location.hash.substring(1);
+  console.log("userid: " + userid);
 
   // connect to server
 
-  var user = { firstName: "Mike", lastName: "Jones", age: "25", location: "84604"};
-
-  for (let key in user) {
-    var p = document.createElement("p");
-    p.appendChild(document.createTextNode(key + ": " + user[key]));
-    document.getElementById("info").appendChild(p);
+  var url = "http://localhost:8000/getuser";
+  var data = {
+    userid: userid
   }
+
+  $.ajax({
+    url: url,
+    type: "POST",
+    data: JSON.stringify(data),
+    success: function(data, success) {
+      console.log(data);
+
+      var name = `${data["firstname"]} ${data["lastname"]}`;
+      window.name = name;
+
+      var $p_name = $("<p></p>").text(`Name: ${name}`);
+      var $p_age = $("<p></p>").text(`Age: ${data["age"]}`);
+      var $p_location = $("<p></p>").text(`Location: ${data["location"]}`);
+
+      // $("#info").append($p_name);
+      $("#info").append($p_name);
+      $("#info").append($p_age);
+      $("#info").append($p_location);
+    },
+    error: function(error) {
+      console.warn(error)
+    }
+  });
 }
 
-function goToInterestPage(interest) {
-  console.log(interest);
+function goToInterestPage(interestid) {
+  console.log(interestid);
 
-  // change to interestid eventually?
-
-  window.location.href="interest.html#" + interest;
+  window.location.href="interest.html#" + interestid;
 }
 
 function createClickableList(list) {
-  for (var i = 0; i < list.length; i++) {
-    var span = document.createElement("span");
-    span.appendChild(document.createTextNode(list[i]));
-    span.addEventListener("click", function() { goToInterestPage(this.innerText) });
-    document.getElementById("interests").appendChild(span);
-  }
+  var $ul = $("<ul></ul>");
+  $("#interests").append($ul);
+
+  $(list).each(function(i) {
+    var $li = $("<li></li>").text(list[i].name);
+    $li.click(function(e) {
+      e.preventDefault();
+      goToUserPage(list[i].interestid);
+    });
+    $($ul).append($li);
+  });
 }
 
 function getInterests() {
   // connect to server
 
-  list = []
-  list.push("Basketball");
-  list.push("Golfing");
-  list.push("Chess");
-  list.push("Frisbee Throwing");
-  list.push("Hammocking");
-  list.push("Running");
-  list.push("Painting");
-  list.push("Collecting Flags");
-  list.push("Paper Planes");
-  list.push("Hotdog-eating");
+  var url = "http://localhost:8000/getuserinterests";
+  var userid = sessionStorage.getItem("userid");
+  var data = {
+    userid: userid
+  }
 
-  createClickableList(list);
+  $.ajax({
+    url: url,
+    type: "POST",
+    data: JSON.stringify(data),
+    success: function(data, success) {
+      console.log(data);
+
+      var interests = data["interests"];
+      createClickableList(interests);
+    },
+    error: function(error) {
+      console.warn(error)
+    }
+  });
 }
 
 function newMessage() {
   console.log("sending message")
-  // change into userid eventually
-  var username = window.location.hash.substring(1);
-  sessionStorage.setItem("recipient", username);
+  var recipientid = window.location.hash.substring(1);
+  var recipientname = window.name;
+  sessionStorage.setItem("recipientid", recipientid);
+  sessionStorage.setItem("recipientname", recipientname);
   window.location.href="new-message.html";
 }

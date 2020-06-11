@@ -9,8 +9,8 @@ $(document).ready(function() {
   
     var url = "http://localhost:8000/createuser";
     var data = {
-      first: firstName,
-      last: lastName,
+      firstname: firstName,
+      lastname: lastName,
       email: email,
       age: age,
       location: location,
@@ -26,26 +26,11 @@ $(document).ready(function() {
       success: function(data, status) {
         console.log("success!");
 
-        url = "http://localhost:8000/getuser";
-        var new_data = { email: email };
-        
-        $.ajax({
-          url: url,
-          type: "POST",
-          data: JSON.stringify(new_data),
-          success: function(data, status) {
-            console.log(data)
-            sessionStorage.setItem("email", data["email"]);
-            sessionStorage.setItem("userid", data["userid"]);
-            window.location.href="main.html";
-          }, 
-          error: function(error) {
-            console.log(error);
-          }
-        });
+        sessionStorage.setItem("userid", data["userid"]);
+        window.location.href="main.html";
       }, 
       error: function(error) {
-        console.log("error occurred: ${error}");
+        console.warn("error while creating user: ${error}");
       }
     });
   });

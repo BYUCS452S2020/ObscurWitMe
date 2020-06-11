@@ -10,14 +10,6 @@
   width: 100%;
 }
 
-.interest_container span {
-  align-items: center;
-  text-align: center;
-  cursor: pointer;
-  display: block;
-  margin-top: 5px;
-}
-
 .interest_container div {
   text-align: center;
 }
@@ -25,6 +17,14 @@
 .interests {
   width: fit-content;
 }
+
+ul li {
+  cursor: pointer;
+  list-style-position: inside;
+  width: fit-content;
+  margin-left: 30%;
+}
+
 
 .column {
   float: left;

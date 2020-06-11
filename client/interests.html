@@ -22,17 +22,25 @@
 
       <div class="column">
         <div class="search_container">
-          <input type="search" id="search" placeholder="Search for an interest">
+          <div>
+            <input type="search" id="search" placeholder="Search for an interest">
 
-          <button type="reset" class="btn btn-success" id="search_btn">Search</button>
 
+            <button type="reset" class="btn btn-success" id="search_btn">Search</button>
+          </div>
+          <div style="margin-top: 5px;">
+            <button type="reset" class="btn btn-secondary" id="sports_btn">Sports</button>
+            <button type="reset" class="btn btn-secondary" id="movies_btn">Movies</button>
+            <button type="reset" class="btn btn-secondary" id="nature_btn">Nature</button>
+          </div>
           <div class="results" id="results"></div>
+          <button style="margin-top: 5px; display: none;" type="reset" class="btn btn-success" id="more">More</button>
         </div>
       </div>
 
       <div class="buttons">
         <div>
-          <button onclick="window.location.href='create-interest.html'" class="btn btn-primary">Add New Interest</button>
+          <button onclick="window.location.href='create-interest.html'" class="btn btn-primary">Create New Interest</button>
         </div>
         <div>
           <button onclick="window.location.href='main.html'" class="btn btn-danger">Back to Main</button>
