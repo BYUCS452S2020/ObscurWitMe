@@ -53,7 +53,7 @@ class MongoDatabase():
         cursor = db.userinterest.find_one(query)
         query = {"$or": []}
         for i in cursor['interests']:
-            query["$or"].append({"name": i})
+            query["$or"].append({"_id": ObjectId(i)})
         cursor = db.interest.find(query)
         return cursor
 
