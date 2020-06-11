@@ -32,7 +32,7 @@ function getUser() {
 
       var $p_name = $("<p></p>").text(`Name: ${name}`);
       var $p_age = $("<p></p>").text(`Age: ${data["age"]}`);
-      var $p_location = $("<p></p>").text(`Age: ${data["location"]}`);
+      var $p_location = $("<p></p>").text(`Location: ${data["location"]}`);
 
       // $("#info").append($p_name);
       $("#info").append($p_name);
@@ -80,7 +80,7 @@ function getInterests() {
     data: JSON.stringify(data),
     success: function(data, success) {
       console.log(data);
-      
+
       var interests = data["interests"];
       createClickableList(interests);
     },
