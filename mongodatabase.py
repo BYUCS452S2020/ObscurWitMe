@@ -111,11 +111,11 @@ class MongoDatabase():
         doc = {"name": name, "description": description, 'imageURL': url, 'categories': [], 'users':[]}
         x = db.interest.insert_one(doc)
         for category in categoryList:
-            if (not db.categories.count({'name' : category}) > 0):
+            if (not db.category.count({'name' : category}) > 0):
                 # Category does not exist, create it.
                 ctgID = self.createCategory(category, category)
             else:
-                ctgID = db.categories.find_one({'name' : category})['_id']
+                ctgID = db.category.find_one({'name' : category})['_id']
             self.createInterestCategory(x.inserted_id, ctgID)
         return x.inserted_id
 
