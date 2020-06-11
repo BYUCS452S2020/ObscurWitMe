@@ -260,7 +260,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         response['userid'] = id
         return response
 
-    def convertCursorToCategoryObjects(self, cursor):
+    def convertCursorToInterestObjects(self, cursor):
         result = []
         for row in cursor:
             tmp = {}
@@ -279,7 +279,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             result.append(tmp)
         return result
 
-    def convertCursorToInterestObjects(self, cursor):
+    def convertCursorToCategoryObjects(self, cursor):
         result = []
         for row in cursor:
             tmp = {}
