@@ -1,194 +1,312 @@
-import pymongo
-from bson import ObjectId
-class MongoDatabase():
-    def __init__(self):
-        self.connection = None
-
-    def __del__(self):
-        if self.connection != None:
-            self.connection.close()
-
-    def getConnection(self):
-        if self.connection == None:
-            self.connection = pymongo.MongoClient('mongodb://localhost')
-        return self.connection.obscurwitme
-
-    # This selects all categories for a specified InterestID
-    def getAllCategoriesForInterest(self, interestID):
-        db = self.getConnection()
-        query = {"_id": ObjectId(interestID)}
-        cursor = db.interest.find_one(query)
-        query = {"$or": []}
-        for cat in cursor['categories']:
-            query["$or"].append({"_id": ObjectId(cat)})
-        cursor = db.category.find(query)
-        return cursor
-
-    # This selects all interests for a specified categoryID
-    def getAllInterestForCategory(self, categoryID):
-        db = self.getConnection()
-        query = {"_id": ObjectId(categoryID)}
-        cursor = db.category.find_one(query)
-        query = {"$or": []}
-        for i in cursor['interests']:
-            query["$or"].append({"_id": ObjectId(i)})
-        cursor = db.interest.find(query)
-        return cursor
-
-    # This selects all users for a specified interestID
-    def getAllUsersForInterest(self, interestID):
-        db = self.getConnection()
-        query = {"_id": ObjectId(interestID)}
-        cursor = db.interest.find_one(query)
-        query = {"$or": []}
-        for u in cursor['users']:
-            query["$or"].append({"_id": ObjectId(u)})
-        cursor = db.user.find(query)
-        return cursor
-
-    # This selects all interests for a specified userID
-    def getAllInterestsForUser(self, userID):
-        db = self.getConnection()
-        query = {"_id": ObjectId(userID)}
-        cursor = db.userinterest.find_one(query)
-        query = {"$or": []}
-        for i in cursor['interests']:
-            query["$or"].append({"_id": ObjectId(i)})
-        cursor = db.interest.find(query)
-        return cursor
-
-    # Creates an entry in the UserInterest table that links the specified userID and interestID together
-    def createUserInterest(self, userID, interestID):
-        db = self.getConnection()
-        userUpdateQuery = {"$push" : {"interests" : interestID}}
-        interestUpdateQuery = {"$push" : {"users" : userID}}
-        userUpdate = db.user.update_one({"_id" : ObjectId(userID)}, userUpdateQuery)
-        interestUpdate = db.interest.update_one({"_id": ObjectId(interestID)}, interestUpdateQuery)
-        return userUpdate.modified_count == 1 and interestUpdate.modified_count == 1
-
-    # Creates an entry in the InterestCategory table that links the specified interestID and categoryID together
-    def createInterestCategory(self, interestID, categoryID):
-        db = self.getConnection()
-        categoryUpdateQuery = {"$push" : {"interests" : interestID}}
-        interestUpdateQuery = {"$push" : {"categories" : categoryID}}
-        categoryUpdate = db.category.update_one({"_id" : ObjectId(categoryID)}, categoryUpdateQuery)
-        interestUpdate = db.interest.update_one({"_id": ObjectId(interestID)}, interestUpdateQuery)
-        return categoryUpdate.modified_count == 1 and interestUpdate.modified_count == 1
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import json
+import cgi
+import mongodatabase
+from datetime import datetime
 
 
-    # On an update, the only required parameter is which user we are updating, blank parameters will not be updated to blank,
-    # but skipped.
-    def updateUserAccount(self, userID, email='', password='', firstName='', lastName='', age='', location=''):
-        db = self.getConnection()
-        update = {"$set": {}}
-        if (email != ''):
-            update["$set"]['email'] = email
-        if (password != ''):
-            update["$set"]['password'] = password
-        if (firstName != ''):
-            update["$set"]['firstName'] = firstName
-        if (lastName != ''):
-            update["$set"]['lastName'] = lastName
-        if (age != ''):
-            update["$set"]['age'] = age
-        if (location != ''):
-            update["$set"]['location'] = location
+class MongoServerHandler(BaseHTTPRequestHandler):
+    def _set_headers(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.end_headers()
 
-        filter = {"_id": ObjectId(userID)}
-        cursor = db.user.update_one(filter, update)
-        return cursor.matched_count
+    def do_HEAD(self):
+        self._set_headers()
 
-    # Every user needs an email and a password in order to create an account, returns id of document
-    def createUserAccount(self, email, password):
-        db = self.getConnection()
-        doc = {"email": email, "password": password, "interests" : []}
-        x = db.user.insert_one(doc)
-        return x.inserted_id
+    #this is for getting from the database
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        response = {}
+        db = mongodatabase.MongoDatabase()
+        #####implement code here for accessing database and parsing into tmpdict
+        #pyodbc code
+        #if self.path == '/getuser':   #get a user
+        #    pass
+#        elif self.path == 'getuserinterests': #get a interest
+#            pass
+#        elif self.path == 'getcategoryinterests':
+#            pass
+#        elif self.path == 'getsentmessages':
+#            pass
+#        elif self.path == 'getreceivedmessages':
+#            pass
+#        elif self.path == 'getinterestusers':
+#            pass
+        
 
-    # This creates an interest page with the given name and description
-    def createInterest(self, name, description, url, categoryList):
-        db = self.getConnection()
-        doc = {"name": name, "description": description, 'imageURL': url, 'categories': [], 'users':[]}
-        x = db.interest.insert_one(doc)
-        for category in categoryList:
-            if (not db.categories.count({'name' : category}) > 0):
-                # Category does not exist, create it.
-                ctgID = self.createCategory(category, category)
-            else:
-                ctgID = db.categories.find_one({'name' : category})['_id']
-            self.createInterestCategory(x.inserted_id, ctgID)
-        return x.inserted_id
+        #####
+        #write dictionary to json to send to client
+        self.wfile.write(str.encode(json.dumps(response)))
 
-    # This creates a category page with the given name and description
-    def createCategory(self, name, description):
-        db = self.getConnection()
-        doc = {"name": name, "description": description, 'interests':[]}
-        x = db.category.insert_one(doc)
-        return x.inserted_id
 
-    # This creates a message from fromUserID to toUserID with the given body
-    def createMessage(self, fromUserID, toUserID, body):
-        db = self.getConnection()
-        doc = {"fromUserID": fromUserID, "toUserID": toUserID, "body": body}
-        x = db.message.insert_one(doc)
-        return x.inserted_id
+    #this is for inserting into the database
+    def do_POST(self):
 
-    # This selects all messages with the specified user as the sender.
-    def getSentMessages(self, userID):
-        db = self.getConnection()
-        query = {"fromUserID": userID}
-        cursor = db.message.find(query)
-        return cursor
+        # read the message and convert it into a python dictionary
+        length = int(self.headers.get('content-length'))
+        messageDict = json.loads(self.rfile.read(length))
+        response = {}
+        db = mongodatabase.MongoDatabase()
+        ###parse data to know what table to insert into
+        #####implement code to insert messageDict into database
+        if self.path == '/createuser':  #insert user
+            response = self.create_user(messageDict, db)
+        elif self.path == '/updateuser':
+            response = self.update_user(messageDict, db)
+        elif self.path == '/login':
+            response = self.login(messageDict, db)
+        elif self.path == '/createinterest':    #insert interest
+            response = self.create_interest(messageDict, db)
+        elif self.path == '/createcategory':
+            response = self.create_category(messageDict, db)
+        elif self.path == '/createmessage':
+            response = self.create_message(messageDict, db)
+        elif self.path == '/addinterest':
+            response = self.add_interest(messageDict, db)
+        elif self.path == '/addinterestcategory':
+            response = self.add_interest_category(messageDict, db)
+        elif self.path == '/getuser':
+            response = self.get_user(messageDict['email'], db)
+        elif self.path == '/getinterest':
+            response = self.get_interest(messageDict['interestid'], db)
+        elif self.path == '/getcategoryinterests':
+            response = self.get_category_interests(messageDict['categoryid'], db)
+        elif self.path == '/getsentmessages':
+            response = self.get_sent_messages(messageDict['userid'], db)
+        elif self.path == '/getreceivedmessages':
+            response = self.get_received_messages(messageDict['userid'], db)
+        elif self.path == '/getinterestusers':
+            response = self.get_interest_users(messageDict['interestid'], db)
+        elif self.path == '/getuserinterests':
+            response = self.get_user_interests(messageDict['userid'], db)
+        elif self.path == '/getconnections':
+            response = self.get_connections(messageDict['userid'], db)
+        elif self.path == '/getallinterests':
+            response = self.get_all_interests(db)
+        elif self.path == '/getAllCategories':
+            response = self.get_all_categories(db)
+        
 
-    # This selects all messages with the specified user as the recipient.
-    def getReceivedMessages(self, userID):
-        db = self.getConnection()
-        query = {"toUserID": userID}
-        cursor = db.message.find(query)
-        return cursor
+        # send the response, current just sends back what was received
+        self._set_headers()
+        self.wfile.write(str.encode(json.dumps(response)))
 
-    # This selects all categories from the Category collection
-    def getAllCategories(self):
-        db = self.getConnection()
-        cursor = db.category.find()
-        return cursor
 
-    # This selects all interests from the Interest collection
-    def getAllInterest(self):
-        db = self.getConnection()
-        cursor = db.interest.find()
-        return cursor
-
-    def getUserByEmail(self, email):
-        db = self.getConnection()
-        query = {"email": email}
-        cursor = db.user.find(query)
-        return cursor
-
-    def getUserByID(self, id):
-        db = self.getConnection()
-        query = {"_id": ObjectId(id)}
-        cursor = db.user.find(query)
-        return cursor
+    def get_user(self, messageDict, db):
+        if 'email' in messageDict:
+            cursor = db.getUserByEmail(messageDict['email'])
+        elif 'userid' in messageDict:
+            cursor = db.getUserByID(messageDict['userid'])
+        results = self.convertCursorToUserObjects(cursor)
+        return results[0]
     
-    def getInterestByID(self, interestID):
-        db = self.getConnection()
-        query = {"_id": ObjectId(interestID)}
-        cursor = db.interest.find(query)
-        return cursor
+    def get_interest(self, interestID, db):
+        cursor = db.getInterestByID(interestID)
+        results = self.convertCursorToInterestObjects(cursor)
+        return results[0]
 
-    def getConnections(self, userID):
-        db = self.getConnection()
-        query = {'_id' : ObjectId(userID)}
-        usr = db.user.find_one(query)
-        query = {'$or' : []}
-        for i in usr['interests']:
-            query['$or'].append({'interests': i})
-        cursor = db.user.find(query)
-        return cursor
+    def get_all_interests(self, db):
+        response = {'interests':[]}
+        cursor = db.getAllInterest()
+        results = self.convertCursorToInterestObjects(cursor)
+        for item in results:
+            response['interests'].append(item)
+        return response
 
-    def login(self, email, password):
-        db = self.getConnection()
-        query = {"email": email, "password": password}
-        cursor = db.user.find(query)
-        return cursor
+    def get_all_categories(self, db):
+        response = {'categories':[]}
+        cursor = db.getAllCategories()
+        results = self.convertCursorToCategoryObjects(cursor)
+        for item in results:
+            response['categories'].append(item)
+        return response
+
+    def get_sent_messages(self, userID, db):
+        response = {'sentmessages':[]}
+        cursor = db.getSentMessages(userID)
+        for row in cursor:
+            tmp = {}
+            tmp['messageid'] = str(row['_id'])
+            tmp['fromid'] = str(row['fromUserID'])
+            tmp['toid'] = str(row['toUserID'])
+            tmp['body'] = row['body']
+            tmp['time'] = row['_id'].getTimestamp()
+            response['sentmessages'].append(tmp)
+        return response
+
+    def get_received_messages(self, userID, db):
+        response = {'receivedmessages':[]}
+        cursor = db.getReceivedMessages(userID)
+        for row in cursor:
+            tmp = {}
+            tmp['messageid'] = str(row['_id'])
+            tmp['fromid'] = str(row['fromUserID'])
+            tmp['toid'] = str(row['toUserID'])
+            tmp['body'] = row['body']
+            tmp['time'] = row['_id'].getTimestamp()
+            response['receivedmessages'].append(tmp)
+        return response
+
+    def get_category_interests(self, categoryID, db):
+        response = {'interests':[]}
+        cursor = db.getAllInterestForCategory(categoryID)
+        results = self.convertCursorToInterestObjects(cursor)
+        for item in results:
+            response['interests'].append(item)
+        return response
+
+    def get_interest_users(self, interestID, db):
+        response = {'users':[]}
+        cursor = db.getAllUsersForInterest(interestID)
+        results = self.convertCursorToUserObjects(cursor)
+        for item in results:
+            response['users'].append(item)
+        return response
+
+    def get_user_interests(self, userID, db):
+        response = {'interests':[]}
+        cursor = db.getAllInterestsForUser(userID)
+        results = self.convertCursorToInterestObjects(cursor)
+        for item in results:
+            response['interests'].append(item)
+        return response
+
+    def create_user(self, messageDict, db):
+        response = {}
+        email = messageDict['email']
+        password = messageDict['password']
+        num = db.createUserAccount(email, password)
+        response['userid'] = str(num)
+        return response
+
+    def update_user(self, messageDict, db):
+        response = {}
+        id = messageDict['userid']
+        email = messageDict['email']
+        password = messageDict['password']
+        firstName = messageDict['first']
+        lastName = messageDict['last']
+        age = messageDict['age']
+        location = messageDict['location']
+        num = db.updateUserAccount(id, email, password, firstName, lastName, age, location)
+        response['success'] = str(num)
+        return response
+
+    def create_interest(self, messageDict, db):
+        response = {}
+        name = messageDict['name']
+        des = messageDict['description']
+        url = messageDict['imageURL']
+        categories = messageDict['categories']
+        num = db.createInterest(name, des, url, categories)
+        response['interestid'] = str(num)
+        return response
+
+    def create_message(self, messageDict, db):
+        response = {}
+        fromID = messageDict['fromid']
+        toID = messageDict['toid']
+        body = messageDict['body']
+        num = db.createMessage(fromID, toID, body)
+        response['messageid'] = str(num)
+        return response
+
+    def create_category(self, messageDict, db):
+        response = {}
+        name = messageDict['name']
+        des = messageDict['description']
+        num = db.createCategory(name, des)
+        response['categoryid'] = str(num)
+        return response
+
+    def add_interest(self, messageDict, db):
+        response = {}
+        userID = messageDict['userid']
+        interestID = messageDict['interestid']
+        num = db.createUserInterest(userID, interestID)
+        response['success'] = True
+        return response
+
+    def add_interest_category(self, messageDict, db):
+        response = {}
+        interestID = messageDict['interestid']
+        categoryID = messageDict['categoryid']
+        num = db.createInterestCategory(interestID, categoryID)
+        response['success'] = True
+        return response
+
+    def get_connections(self, userID, db):
+        response = {'users': []}
+        cursor = db.getConnections(userID)
+        results = self.convertCursorToUserObjects(cursor)
+        for item in results:
+            response['users'].append(item)
+        return response
+
+    def login(self, messageDict, db):
+        response = {}
+        email = messageDict['email']
+        password = messageDict['password']
+        cursor = db.login(email, password)
+        id = ""
+        for row in cursor:
+            id = str(row['_id'])
+            response['success'] = True
+        if 'success' not in response:
+            response['success'] = False
+        response['userid'] = id
+        return response
+
+
+    def convertCursorToCategoryObjects(self, cursor):
+        result = []
+        for row in cursor:
+            tmp = {}
+            tmp['interestid'] = str(row['_id'])
+            tmp['name'] = row['name']
+            tmp['description'] = row['description']
+            tmp['imageURL'] = row['imageURL']
+            catList = []
+            for item in row['categories']:
+                catList.append(str(item))
+            tmp['categories'] = catList
+            usList = []
+            for item in row['users']:
+                usList.append(str(item))
+            tmp['users'] = usList
+            result.append(tmp)
+        return result
+
+    def convertCursorToInterestObjects(self, cursor):
+        result = []
+        for row in cursor:
+            tmp = {}
+            tmp['categoryid'] = str(row['_id'])
+            tmp['name'] = row['name']
+            tmp['description'] = row['description']
+            intList = []
+            for item in row['interests']:
+                intList.append(str(item))
+            tmp['interests'] = intList
+            result.append(tmp)
+        return result
+
+    def convertCursorToUserObjects(self, cursor):
+        result = []
+        for row in cursor:
+            tmp = {}
+            tmp['userid'] = str(row['_id'])
+            tmp['firstname'] = row['firstName']
+            tmp['lastname'] = row['lastName']
+            tmp['age'] = row['age']
+            tmp['location'] = row['location']
+            tmp['email'] = row['email']
+            intList = []
+            for item in row['interests']:
+                intList.append(str(item))
+            tmp['interests'] = intList
+            result.append(tmp)
+        return result
