@@ -50,7 +50,7 @@ class MongoDatabase():
     def getAllInterestsForUser(self, userID):
         db = self.getConnection()
         query = {"_id": ObjectId(userID)}
-        cursor = db.user.find_one(query)
+        cursor = db.userinterest.find_one(query)
         query = {"$or": []}
         for i in cursor['interests']:
             query["$or"].append({"_id": ObjectId(i)})
@@ -111,11 +111,11 @@ class MongoDatabase():
         doc = {"name": name, "description": description, 'imageURL': url, 'categories': [], 'users':[]}
         x = db.interest.insert_one(doc)
         for category in categoryList:
-            if (not db.category.count({'name' : category}) > 0):
+            if (not db.categories.count({'name' : category}) > 0):
                 # Category does not exist, create it.
                 ctgID = self.createCategory(category, category)
             else:
-                ctgID = db.category.find_one({'name' : category})['_id']
+                ctgID = db.categories.find_one({'name' : category})['_id']
             self.createInterestCategory(x.inserted_id, ctgID)
         return x.inserted_id
 
@@ -177,6 +177,12 @@ class MongoDatabase():
         cursor = db.interest.find(query)
         return cursor
 
+    def getCategoryByID(self, categoryID):
+        db = self.getConnection()
+        query = {"_id": ObjectId(categoryID)}
+        cursor = db.category.find(query)
+        return cursor
+
     def getConnections(self, userID):
         db = self.getConnection()
         query = {'_id' : ObjectId(userID)}
@@ -191,4 +197,12 @@ class MongoDatabase():
         db = self.getConnection()
         query = {"email": email, "password": password}
         cursor = db.user.find(query)
+        return cursor
+
+    def searchInterest(self, queryString):
+        db = self.getConnection()
+        query = {'$text' : {'$search': queryString}}
+        scoring = {'score' : {'$meta': 'textScore'}}
+        cursor = db.interest.find(query, scoring)
+        cursor.sort([('score', {'$meta': 'textScore'})])
         return cursor
