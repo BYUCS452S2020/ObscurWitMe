@@ -246,7 +246,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         url = messageDict['imageURL']
         categories = messageDict['categories']
         num = db.createInterest(name, des, url, categories)
-        response['interestid'] = num
+        response['interestid'] = str(num)
         return response
 
     def create_message(self, messageDict, db):
@@ -255,7 +255,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         toID = messageDict['toid']
         body = messageDict['body']
         num = db.createMessage(fromID, toID, body)
-        response['messageid'] = num
+        response['messageid'] = str(num)
         return response
 
     def create_category(self, messageDict, db):
@@ -263,7 +263,7 @@ class MongoServerHandler(BaseHTTPRequestHandler):
         name = messageDict['name']
         des = messageDict['description']
         num = db.createCategory(name, des)
-        response['categoryid'] = num
+        response['categoryid'] = str(num)
         return response
 
     def add_interest(self, messageDict, db):
@@ -295,7 +295,6 @@ class MongoServerHandler(BaseHTTPRequestHandler):
             response['success'] = False
         response['userid'] = id
         return response
-
-
+    
 httpd = HTTPServer(('localhost', 8000), MongoServerHandler)
 httpd.serve_forever()
