@@ -52,7 +52,6 @@ function getInbox() {
   });  
 }
 
-// TODO: format properly
 function buildInbox(list) {
   for (var i = 0; i < list.length; i++) {
     var formattedTime = getTime(list[i].time);
@@ -93,7 +92,6 @@ function getOutbox() {
   });
 }
 
-// TODO: format properly
 function buildOutbox(list) {
   for (var i = 0; i < list.length; i++) {
     var formattedTime = getTime(list[i].time);

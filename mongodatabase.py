@@ -201,6 +201,7 @@ class MongoDatabase():
         return cursor
 
     def searchInterest(self, queryString):
+        print("entering search");
         db = self.getConnection()
         query = {'$text' : {'$search': queryString}}
         scoring = {'score' : {'$meta': 'textScore'}}

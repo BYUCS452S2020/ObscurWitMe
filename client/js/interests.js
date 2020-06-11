@@ -26,15 +26,13 @@ $(document).ready(function() {
   });
 
   $("#sports_btn").click(function() {
-    // TODO: fix
-    var url = "http://localhost:8000/getallinterests";
-    // var url = "http://localhost:8000/getsearchinterests";
+    var url = "http://localhost:8000/searchinterest";
     var startat = parseInt(sessionStorage.getItem("sports_startat"));
     
     var data = {
       startat: startat,
       count: 10,
-      query: "sports"
+      query: "Sports"
     }
 
     $.ajax({
@@ -44,6 +42,7 @@ $(document).ready(function() {
       success: function(data, status) {
         var list = data["interests"];
         console.log(list);
+        $("#results").empty()
         createClickableList(list, $("#results"));
 
         if ($("#results ul li").length < data["totalcount"]) {
@@ -60,9 +59,7 @@ $(document).ready(function() {
   });
 
   $("#movies_btn").click(function() {
-    // TODO: fix
-    var url = "http://localhost:8000/getallinterests";
-    // var url = "http://localhost:8000/getsearchinterests";
+    var url = "http://localhost:8000/searchinterest";
     var startat = parseInt(sessionStorage.getItem("movies_startat"));
     
     var data = {
@@ -78,6 +75,7 @@ $(document).ready(function() {
       success: function(data, status) {
         var list = data["interests"];
         console.log(list);
+        $("#results").empty()
         createClickableList(list, $("#results"));
 
         if ($("#results ul li").length < data["totalcount"]) {
@@ -94,9 +92,7 @@ $(document).ready(function() {
   });
 
   $("#nature_btn").click(function() {
-    // TODO: fix
-    var url = "http://localhost:8000/getallinterests";
-    // var url = "http://localhost:8000/getsearchinterests";
+    var url = "http://localhost:8000/searchinterest";
     var startat = parseInt(sessionStorage.getItem("nature_startat"));
     
     var data = {
@@ -112,6 +108,7 @@ $(document).ready(function() {
       success: function(data, status) {
         var list = data["interests"];
         console.log(list);
+        $("#results").empty()
         createClickableList(list, $("#results"));
 
         if ($("#results ul li").length < data["totalcount"]) {
@@ -131,9 +128,7 @@ $(document).ready(function() {
     var text = $("#search").val();
     console.log("searching for: " + text);
 
-    // TODO: fix
-    var url = "http://localhost:8000/getallinterests";
-    // var url = "http://localhost:8000/getsearchinterests";
+    var url = "http://localhost:8000/searchinterest";
     var startat = parseInt(sessionStorage.getItem("search_startat"));
 
     var data = {
@@ -151,6 +146,7 @@ $(document).ready(function() {
 
         var list = data["interests"];
         console.log(list);
+        $("#results").empty()
         createClickableList(list, $("#results"));
 
         if ($("#results ul li").length < data["totalcount"]) {
